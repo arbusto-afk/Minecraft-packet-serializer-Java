@@ -66,27 +66,41 @@ class PacketLoader{
         if(packetNode.isArray()){
 
             List<Field> fields = new ArrayList<>();
-            /* todo
-            todo curently skipping first element of an array
-            todo since i assume it will always be a descrtipr
-            todo descriptor= ("switch", "container", etc)
-
-             */
+            if(packetNode.isEmpty())
+                return typeMap.get("void");
             if(!packetNode.isEmpty() && packetNode.get(0).asText().equals("switch")){
                 return new ProtocolType("unsupSwitch", fields);
             }
-            boolean flag = false;
-            for(JsonNode subNode : packetNode){
-                if(flag) {
-                    ProtocolType subType = createTypeInstanceFromNOde(subNode);
-                    fields.addAll(subType.getFields());
-                } else {
-                    flag = true;
+            String name = packetNode.get(0).asText();
+            switch(name) {
+                case "array": {
+                    List<Field> arrayFields = createTypeInstanceFromNOde(packetNode.get(1).get("type")).getFields();
+                    ProtocolType p = new ProtocolType("array", arrayFields);
+                    return p;
+                }
+                case "bitflags": {
+                    //todo support complex types
+                    ProtocolType t = typeMap.get(packetNode.get(1).get("type").asText());
+                    return new ProtocolType(name, List.of(new Field(t, "anon")));
+                }
+                case "buffer": {
+                    JsonNode asd = packetNode.get(1).get("count");
+                    if(asd == null)
+                        asd = packetNode.get(1).get("countType");
+                    String n = asd.asText();
+                    Field f = new Field(typeMap.get("buffer"), "[buf(" + n + ")]");
+                    fields.add(f);
+                }
+                default: {
+                    for (JsonNode subNode : packetNode) {
+                        ProtocolType subType = createTypeInstanceFromNOde(subNode);
+                        fields.addAll(subType.getFields());
+                    }
                 }
             }
-            return new ProtocolType("777", fields);
+            return new ProtocolType(name, fields);
         } else if(packetNode.isObject()) {
-            String name = "noname, maybe typeName?";
+            String name = "anon";
             if(packetNode.get("name") != null) {
                 name = packetNode.get("name").asText();
             }
@@ -378,8 +392,8 @@ class TypeLoader {
             ProtocolType type = new ProtocolType(typeName, List.of(onlyField));
             types.put(typeName, type);
         }
-        types.put("void", null);
-
+        types.put("void", new ProtocolType("void", Collections.emptyList()));
+        types.put("ContainerID", types.get("varint"));
         JsonNode allTypesRootNode = this.protocolRootNode.get("types");
         for (Iterator<String> it = allTypesRootNode.fieldNames(); it.hasNext(); ) {
             String key = it.next();

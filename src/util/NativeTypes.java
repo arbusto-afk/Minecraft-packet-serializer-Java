@@ -23,7 +23,9 @@ public enum NativeTypes {
     bool(Boolean.class),
     UUID(BigInteger.class),
     pstring(String.class),
-    buffer(Byte[].class),
+    buffer(Buffer[].class),
+    lenbuffer(Buffer[].class),
+    option(Boolean.class),
 
     bitfield(Bitfield.class),
 

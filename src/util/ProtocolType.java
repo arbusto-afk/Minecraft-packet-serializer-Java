@@ -22,9 +22,9 @@ public class ProtocolType {
     @Override
     public String toString() {
         return "compType{" +
-                "fields=" + fields +
-                ", typeName='" + typeName + '\'' +
-                '}';
+                "typeName='" + typeName + '\'' +
+                ",fields=" + fields +
+                " '}";
     }
 
     public List<Field> asFields(){
