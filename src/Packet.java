@@ -1,4 +1,4 @@
-import util.Field;
+import util.ProtocolType;
 
 import java.util.ArrayList;
 import java.util.*;
@@ -6,25 +6,23 @@ import java.util.*;
 public class Packet {
     final String name;
     //name, desc
-    final List<Pair<Field, String>> params = new ArrayList<>();
+  //  final List<ProtocolType> params = new ArrayList<>();
+    final ProtocolType typeInstance;
 
-    public Packet(String name){
+    public Packet(String name, ProtocolType typeInstance){
         this.name = name;
+        this.typeInstance = typeInstance;
     }
-    public void addParam(Field type, String desc){
-        params.add(new Pair<>(type, desc));
+/*    public void addParam(ProtocolType type){
+        params.add(type);
     }
-
+  *//*  public void addParam(List<Field> type){
+        params.addAll(type);
+    }
+*/
     @Override
     public String toString() {
-        StringBuilder strb = new StringBuilder();
-        for(Pair<Field, String> p : params) {
-            strb.append("          -").append(p.getRight()).append("[").
-                    append(p.getLeft().toString().
-                            substring(p.getLeft().toString().
-                                    lastIndexOf(".") + 1)).append("], " + "\n");
-        }
-        return name + ": \n" + strb;
+        return name + ": " + typeInstance;
 
     }
 }

@@ -1,9 +1,7 @@
 import java.io.File;
 import java.io.IOException;
-import java.lang.annotation.Native;
 import java.util.*;
 
-import Serializable.Container;
 import util.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,18 +22,145 @@ public class Main {
             System.out.println("Stablished compound type '" + t + "' with params: ");
         }*/
         TypeLoader tl = new TypeLoader(tmp.getProtocolRootNode());
-        for(ProtocolType type : tl.types()){
-            NativeTypes t;
-            try{
-                t = NativeTypes.valueOf(type.getTypeName());
-            } catch (Exception ex){
-                t = null;
-            }
-            System.out.println("Stablished " + (t != null ? "simple" : "compound") + " type: " + type);
+        PacketLoader pl = new PacketLoader(tl.typesMap(), tmp.getProtocolRootNode());
+        for(Packet p : pl.getAllPackets(version, pcOrBedrock)){
+            System.out.println(p);
         }
     }
 
 }
+class PacketLoader{
+    private final Map<String, ProtocolType> typeMap;
+    private final JsonNode protocolRootNode;
+    public PacketLoader(Map<String, ProtocolType> typeMap, JsonNode rootNode){
+        this.typeMap = typeMap;
+        this.protocolRootNode = rootNode;
+    }
+    private ProtocolType protocolTypeFromTextualNode(JsonNode node, String name){
+        return null;
+    }
+
+    private ProtocolType createTypeInstanceFromNOde(JsonNode packetNode) {
+     //   Packet p = new Packet(name);
+        //todo
+        /*
+        switch(packetNode.get(0).asText()){
+            case "container": {
+                for (JsonNode node : packetNode.get(1)) {
+                    //if (!node.isTextual()) {
+                        if(node.get("type").isTextual()) {
+                            ProtocolType type = typeMap.get(node.get("type").asText());
+                            String desc = node.get("name") != null ? node.get("name").asText() : "NoName";
+                          //  p.addParam(new Field(type, desc));
+                //        }
+                    }
+                }
+            }
+            case "bitfield": {
+             //   List<F>
+                for (JsonNode node : packetNode.get(1)){
+                }
+            }
+        }*/
+
+        if(packetNode.isArray()){
+
+            List<Field> fields = new ArrayList<>();
+            /* todo
+            todo curently skipping first element of an array
+            todo since i assume it will always be a descrtipr
+            todo descriptor= ("switch", "container", etc)
+
+             */
+            if(!packetNode.isEmpty() && packetNode.get(0).asText().equals("switch")){
+                return new ProtocolType("unsupSwitch", fields);
+            }
+            boolean flag = false;
+            for(JsonNode subNode : packetNode){
+                if(flag) {
+                    ProtocolType subType = createTypeInstanceFromNOde(subNode);
+                    fields.addAll(subType.getFields());
+                } else {
+                    flag = true;
+                }
+            }
+            return new ProtocolType("777", fields);
+        } else if(packetNode.isObject()) {
+            String name = "noname, maybe typeName?";
+            if(packetNode.get("name") != null) {
+                name = packetNode.get("name").asText();
+            }
+            JsonNode typeNode;
+            if(packetNode.get("type") != null) {
+             typeNode = packetNode.get("type");
+            } else if(packetNode.get("size") != null) {
+                typeNode = packetNode.get("size");
+            }else {
+                typeNode = packetNode.get("countType");
+            }
+            if(typeNode == null)
+                typeNode = packetNode.get("count");
+            if (typeNode.isTextual() || typeNode.isInt()) {
+                String typeName = typeNode.asText();
+                Field onlyField = new Field(typeMap.get(typeName), name);
+                return new ProtocolType(name, List.of(onlyField));
+            } else if (typeNode.isArray() || typeNode.isObject()) {
+                return createTypeInstanceFromNOde(typeNode);
+            }
+            throw new RuntimeException("Obj node, Type is nor arr nor text :(");
+        }
+        else if(packetNode.isTextual()){
+            return new ProtocolType("anon", typeMap.get(packetNode.asText()) != null ? typeMap.get(packetNode.asText()).getFields() : Collections.emptyList());
+        }
+        throw new RuntimeException("nor object nor array");
+    }
+    private List<Packet> collectPackets(String version, String pcOrBedrock, String type) {
+        List<Packet> packets = new ArrayList<>();
+        for(JsonNode node : this.protocolRootNode){
+            //toClient,toServer
+            JsonNode typeNode = node.get(type);
+            if(typeNode != null){
+                typeNode = typeNode.get("types");
+
+                //iterate over types
+                Iterator<String> fieldNames = typeNode.fieldNames();
+                while (fieldNames.hasNext()) {
+                    String fieldName = fieldNames.next();
+                    JsonNode packetNode = typeNode.get(fieldName);
+                    packets.add(new Packet(fieldName, createTypeInstanceFromNOde(packetNode)));
+                    //skip packet mapping ping 0x01 .. etc
+                        /*if(!Objects.equals(fieldName, "packet")){
+                            Packet p = new Packet(fieldName);
+                            for (Iterator<String> it = packetsNode.get(fieldName).fieldNames(); it.hasNext(); ) {
+                                String field = it.next();
+                                //packetsNode.get(field).asText()
+                                p.addParam(field, "n");
+                                packets.add(p);
+                            }
+                        }*/
+                }
+            }
+        }
+        return packets;
+    }
+
+    public List<Packet> getToClientPackets(String version, String pcOrBedrock) throws IOException {
+        return collectPackets(version, pcOrBedrock, "toClient");
+    }
+
+    public List<Packet> getToServerPackets(String version, String pcOrBedrock) throws IOException {
+        return collectPackets(version, pcOrBedrock, "toServer");
+    }
+
+    public List<Packet> getAllPackets(String version, String pcOrBedrock) throws IOException {
+        List<Packet> ts = getToServerPackets(version, pcOrBedrock);
+        List<Packet> tc = getToClientPackets(version,pcOrBedrock);
+        tc.addAll(ts);
+        return tc;
+    }
+
+}
+
 class Handler {
     final String dataDir = "minecraft-data/data/";
     final String dataPathName = "dataPaths.json";
@@ -130,7 +255,7 @@ class Handler {
             File propertyFile = new File(dataDir + propertyNode.asText() + "/" + property + ".json");
             return mapper.readTree(propertyFile);
         }
-
+/*
     private Packet createPacketFromJsonNode(String name, JsonNode packetNode){
         Packet p = new Packet(name);
         for(JsonNode paramNode : packetNode.get(1)) {
@@ -155,8 +280,8 @@ class Handler {
         }
         return p;
     }
-
-
+*/
+/*
     private List<Packet> collectPackets(String version, String pcOrBedrock, String type) {
         List<Packet> packets = new ArrayList<>();
         for(JsonNode node : this.protocolRootNode){
@@ -172,7 +297,7 @@ class Handler {
                         JsonNode packetNode = typeNode.get(fieldName);
                         packets.add(createPacketFromJsonNode(fieldName, packetNode));
                         //skip packet mapping ping 0x01 .. etc
-                        /*if(!Objects.equals(fieldName, "packet")){
+                        if(!Objects.equals(fieldName, "packet")){
                             Packet p = new Packet(fieldName);
                             for (Iterator<String> it = packetsNode.get(fieldName).fieldNames(); it.hasNext(); ) {
                                 String field = it.next();
@@ -180,7 +305,7 @@ class Handler {
                                 p.addParam(field, "n");
                                 packets.add(p);
                             }
-                        }*/
+                        }
                     }
             }
         }
@@ -201,6 +326,7 @@ class Handler {
         tc.addAll(ts);
         return tc;
     }
+*/
 }
 class TypeLoader {
     private final JsonNode protocolRootNode;
@@ -270,6 +396,9 @@ class TypeLoader {
     }
     public Iterable<ProtocolType> types(){
         return this.types.values();
+    }
+    public Map<String, ProtocolType> typesMap(){
+        return this.types;
     }
 }
 

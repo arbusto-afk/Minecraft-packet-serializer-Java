@@ -25,13 +25,14 @@ public enum NativeTypes {
     pstring(String.class),
     buffer(Byte[].class),
 
-    bitfield(Bitfield.class);
+    bitfield(Bitfield.class),
+
+
+    bitflags(Byte.class),
+    restBuffer(Byte[].class);
   //  container(Container.class);
     Class<?> clazz;
     NativeTypes(Class<?> clazz){
         this.clazz = clazz;
-    }
-    public ProtocolType asProtocolType(){
-        return new ProtocolType(this.toString(), )
     }
 }

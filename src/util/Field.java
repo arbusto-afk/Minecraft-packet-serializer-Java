@@ -8,6 +8,6 @@ public class Field {
         this.className = desc;
     }
     public String toString(){
-        return className + "(" + clazz +")";
+        return className + "(" + (clazz == null ? "\u001b[31mnull\u001b[0m" : clazz.getTypeName()) +")";
     }
 }
