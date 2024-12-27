@@ -10,6 +10,10 @@ public class Packet {
     public Packet(String name) {
         this.name = name;
     }
+    public Packet(String name, List<PacketField> fields){
+        this.name = name;
+        this.fields.addAll(fields);
+    }
 
     public String getName() {
         return name;

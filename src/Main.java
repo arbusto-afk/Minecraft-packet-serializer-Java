@@ -113,7 +113,7 @@ class PacketPrinter {
         if (packetList.isEmpty())
             throw new RuntimeException("Bad packet format, is empty");
 
-        Packet packet = new Packet(name);it
+        Packet packet = new Packet(name);
 
         if (packetList.size() > 1 && packetList.get(1) instanceof List) {
             @SuppressWarnings("unchecked")
@@ -139,7 +139,92 @@ class PacketPrinter {
             System.out.println(entry.getValue());
         }
     }
+    /*private List<PacketField> formatType(Object typeDef, String indent) {
+        if (typeDef instanceof String) {
+            return List.of(new PacketField((String) typeDef, "a")); // Simple type
+        }
+        if (typeDef instanceof List) {
+            List<?> typeList = (List<?>) typeDef;
 
+            if (typeList.isEmpty())
+                return List.of(new PacketField("null", "null"));
+
+            String typeKeyword = (String) typeList.get(0);
+            switch (typeKeyword) {
+                case "mapper": {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> mapperDetails = (Map<String, Object>) typeList.get(1);
+                    String baseType = (String) mapperDetails.get("type");
+                    Map<?, ?> mappings = (Map<?, ?>) mapperDetails.get("mappings");
+                    return "mapper<" + baseType + "> " + mappings;
+                }
+                case "switch": {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> switchDetails = (Map<String, Object>) typeList.get(1);
+                    String compareTo = (String) switchDetails.get("compareTo");
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> fields = (Map<String, Object>) switchDetails.get("fields");
+                    StringBuilder switchOutput = new StringBuilder("switch (compareTo=" + compareTo + ") { ");
+                    for (Map.Entry<String, Object> fieldEntry : fields.entrySet()) {
+                        switchOutput.append("case ").append(fieldEntry.getKey()).append(" -> ")
+                                .append(formatType(fieldEntry.getValue(), indent + "  "));
+                    }
+                    if (switchDetails.containsKey("default")) {
+                        switchOutput.append("default -> ").append(formatType(switchDetails.get("default"), indent + "  "));
+                    }
+                    switchOutput.append(" }");
+                    return switchOutput.toString();
+                }
+                case "option": {
+                    Object innerType = typeList.get(1);
+                    return new () formatType(innerType, indent); // Correctly format option type
+                }
+                case "array": {
+                    // Process nested arrays without redundant wrapping
+                    Object innerType = typeList.get(1);
+                    String formattedInnerType = formatType(innerType, indent);
+                    if (formattedInnerType.startsWith("array<")) {
+                        // Avoid double wrapping arrays
+                        return formattedInnerType;
+                    }
+                    boolean isLengthPrefixed = innerType instanceof Map && ((Map<?, ?>) innerType).containsKey("countType");
+                    return "array<" + formattedInnerType + ">(" + (isLengthPrefixed ? "length-prefixed" : "non-length-prefixed") + ")";
+                }
+                case "container": {
+                    if (typeList.size() > 1 && typeList.get(1) instanceof List) {
+                        @SuppressWarnings("unchecked")
+                        List<Map<String, Object>> containerFields = (List<Map<String, Object>>) typeList.get(1);
+                        StringBuilder containerOutput = new StringBuilder("container { ");
+                        for (Map<String, Object> field : containerFields) {
+                            String fieldName = (String) field.get("name");
+                            Object fieldType = field.get("type");
+                            containerOutput.append("\n").append(indent).append("  ").append(fieldName)
+                                    .append(": ").append(formatType(fieldType, indent + "  "));
+                        }
+                        containerOutput.append("\n").append(indent).append("}");
+                        return containerOutput.toString();
+                    }
+                }
+                default: {
+                    return typeKeyword + "<unknown>";
+                }
+            }
+
+        } else if (typeDef instanceof Map) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> typeMap = (Map<String, Object>) typeDef;
+
+            if (typeMap.containsKey("type") && typeMap.containsKey("countType")) {
+                String baseType = formatType(typeMap.get("type"), indent);
+                return "array<" + baseType + ">(length-prefixed)";
+            } else {
+                return typeMap.toString(); // Handle raw map structures if needed
+            }
+        }
+
+        return "unknown";
+    }
+*/
     private String formatType(Object typeDef, String indent) {
         if (typeDef instanceof String) {
             return (String) typeDef; // Simple type
@@ -237,7 +322,7 @@ public class Main {
         try {
             ObjectMapper mapper = new ObjectMapper();
             Protocol protocol = mapper.readValue(new File("minecraft-data/data/" + pcOrBedrock + "/" + version + "/protocol.json"), Protocol.class);
-
+            System.out.println(protocol.getNewPackets());
             // Print types
             /*
             System.out.println("Loaded types:");
@@ -247,7 +332,7 @@ public class Main {
 
             */
             // Print packets
-
+/*
             System.out.println("\nLoaded packets:");
             for (Map.Entry<String, Object> phaseEntry : protocol.getPackets().entrySet()) {
                 String phase = phaseEntry.getKey();
@@ -291,12 +376,12 @@ public class Main {
                         }
                     }
                 }
-            }
+            }*/
         }
         catch (IOException e) {
             e.printStackTrace();
         }
-        pp.logPackets();
+      //  pp.logPackets();
     }
 }
 
