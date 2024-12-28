@@ -2,15 +2,20 @@ package neoutil;
 
 import java.util.List;
 
-public class ArrayField extends PacketField{
-    PacketField cType;
-    public ArrayField(String name, List<PacketField> type,PacketField countType) {
-        super(type, name);
-        this.cType = countType;
+public class ArrayField extends PacketField {
+    private final PacketField countType;
+
+    public ArrayField(String name, List<PacketField> type, PacketField countType) {
+        super("array", name, type);
+        this.countType = countType;
     }
 
-    public ArrayField(String name, List<PacketField> type,PacketField countType, Boolean optional) {
-        super(name, type, optional);
-        this.cType = countType;
+    public PacketField getCountType() {
+        return countType;
+    }
+
+    @Override
+    public String toString() {
+        return "ArrayField{name='" + getName() + "', type=" + getSubFields() + ", countType=" + countType + '}';
     }
 }

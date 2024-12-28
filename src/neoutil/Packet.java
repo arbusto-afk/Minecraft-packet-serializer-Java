@@ -1,18 +1,20 @@
 package neoutil;
 
-import java.util.ArrayList;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 public class Packet {
     private final String name;
-    private final List<PacketField> fields = new ArrayList<>();
+    private final List<PacketField> fields;
 
-    public Packet(String name) {
+    @JsonCreator
+    public Packet(
+            @JsonProperty("name") String name,
+            @JsonProperty("type") Object type) {
         this.name = name;
-    }
-    public Packet(String name, List<PacketField> fields){
-        this.name = name;
-        this.fields.addAll(fields);
+        this.fields = PacketField.extractFields(type);
     }
 
     public String getName() {
@@ -21,10 +23,6 @@ public class Packet {
 
     public List<PacketField> getFields() {
         return fields;
-    }
-
-    public void addField(PacketField field) {
-        fields.add(field);
     }
 
     @Override
