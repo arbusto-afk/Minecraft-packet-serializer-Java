@@ -2,12 +2,25 @@ package neoutil;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import serializables.Types.primSC;
 
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Packet {
     private final String name;
     private final List<PacketField> fields;
+    private final List<Class<?>> fieldType = new ArrayList<>();
+    private Integer id;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     @JsonCreator
     public Packet(
@@ -15,6 +28,20 @@ public class Packet {
             @JsonProperty("type") Object type) {
         this.name = name;
         this.fields = PacketField.extractFields(type);
+      /*
+        for(PacketField f : this.fields){
+            Class<?> fieldClass = Object.class; // Default to Object.class
+            try {
+                String className = "serializables.Types.VarInt";
+                fieldClass = Class.forName(className);
+            } catch (Exception ex) {
+                // Log or print the issue for debugging purposes
+                System.err.println("Class not found: " + f.getType() + ", defaulting to Object.class");
+            }
+            fieldType.add(fieldClass);
+        }
+        */
+
     }
 
     public String getName() {
@@ -24,14 +51,43 @@ public class Packet {
     public List<PacketField> getFields() {
         return fields;
     }
+    public static String extractLast(String input) {
+        if (input == null || input.isEmpty()) {
+            return ""; // Handle null or empty input
+        }
+        int lastDotIndex = input.lastIndexOf('.');
+        return (lastDotIndex != -1) ? input.substring(lastDotIndex + 1) : input;
+    }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Packet{name='" + name + "', fields=[");
-        for (PacketField field : fields) {
+/*        for (PacketField field : fields) {
             sb.append("\n  ").append(field);
+        }*/
+        for(PacketField f : this.fields){
+            Class<?> fieldClass = Object.class; // Default to Object.class
+            try {
+                //String className = "serializables.Types." + f.getType();
+                fieldClass = primSC.getClazz(f.getType());
+            } catch (Throwable ex) {
+                // Log or print the issue for debugging purposes
+                System.err.println("Class not found: " + f.getType() + ", defaulting to Object.class");
+            }
+            fieldType.add(fieldClass);
         }
-        sb.append("\n]}");
+        boolean flag = false;
+        int i = 0;
+        for(Class<?> c : fieldType){
+            if(flag){
+                sb.append(",");
+            }
+            flag = true;
+            sb.append("").append(extractLast(c.getName()).equals("ProtocolType") ? ("*" + fields.get(i).getType()) :  extractLast(c.getName()));
+            i++;
+        }
+        sb.append("]}\n");
         return sb.toString();
     }
+
 }

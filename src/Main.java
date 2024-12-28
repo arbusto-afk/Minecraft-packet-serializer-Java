@@ -1,20 +1,11 @@
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
-import neoutil.Packet;
-import neoutil.PacketField;
-import neoutil.Protocol;
-import com.fasterxml.jackson.databind.JsonNode;
+import neoutil.ProtocolMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-import java.util.List;
-import java.util.Map;
 /*
      class PacketPrinter {
 
@@ -98,16 +89,15 @@ import java.util.Map;
      }
 */
 
-import java.util.*;
-
 
 public class Main {
     public static void main(String[] args) throws IOException {
         String version = "1.21.3";
         String pcOrBedrock = "pc";
         ObjectMapper mapper = new ObjectMapper();
-        Protocol protocol = mapper.readValue(new File("minecraft-data/data/" + pcOrBedrock + "/" + version + "/protocol.json"), Protocol.class);
-        System.out.println(protocol.getNewPackets());
+        ProtocolMapper protocol = mapper.readValue(new File("minecraft-data/data/" + pcOrBedrock + "/" + version + "/protocol.json"), ProtocolMapper.class);
+        System.out.println(protocol.getPackets());
+        System.out.println(protocol.getTypes());
     }
 }
 
