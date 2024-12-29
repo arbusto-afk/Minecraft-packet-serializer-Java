@@ -38,7 +38,6 @@ public class PacketField {
         if (type instanceof List<?> list) {
             String fieldType = list.get(0).toString();
             Object fieldDefinition = list.size() > 1 ? list.get(1) : null;
-
             switch (fieldType) {
                 case "container" -> {
                     List<Map<String, Object>> subFieldList = (List<Map<String, Object>>) fieldDefinition;
@@ -55,6 +54,9 @@ public class PacketField {
                     PacketField countType = extractFields(arrayDetails.get("countType") == null ? arrayDetails.get("count") : arrayDetails.get("countType")).getFirst();
                     List<PacketField> arrayType = extractFields(arrayDetails.get("type"));
                     fields.add(new ArrayField("array", arrayType, countType));
+                }
+                case "option" -> {
+                    fields.add(new PacketField(fieldType, null, null));
                 }
                 default -> fields.add(new PacketField(fieldType, null, null));
             }

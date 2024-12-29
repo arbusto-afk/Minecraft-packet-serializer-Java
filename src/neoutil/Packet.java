@@ -2,11 +2,14 @@ package neoutil;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import serializables.ProtocolType;
 import serializables.Types.primSC;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Packet {
     private final String name;
@@ -62,7 +65,7 @@ public class Packet {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Packet{name='" + name + "', fields=[");
-/*        for (PacketField field : fields) {
+        /*for (PacketField field : fields) {
             sb.append("\n  ").append(field);
         }*/
         for(PacketField f : this.fields){
@@ -83,11 +86,53 @@ public class Packet {
                 sb.append(",");
             }
             flag = true;
-            sb.append("").append(extractLast(c.getName()).equals("ProtocolType") ? ("*" + fields.get(i).getType()) :  extractLast(c.getName()));
+            sb.append("").append(extractLast(c.getName()).equals("ProtocolType") ? ("*unsup") :  extractLast(c.getName()));
             i++;
         }
         sb.append("]}\n");
         return sb.toString();
+    }
+
+
+    public Class<?>[] getClasses(Map<String, Object> typeMap) {
+        List<Class<?>> resolvedClasses = new ArrayList<>();
+
+        for (PacketField field : this.fields) {
+            resolvedClasses.addAll(resolveFieldClasses(field, typeMap));
+        }
+
+        return resolvedClasses.toArray(new Class<?>[0]);
+    }
+
+    private List<Class<?>> resolveFieldClasses(PacketField field, Map<String, Object> typeMap) {
+        List<Class<?>> classes = new ArrayList<>();
+
+        try {
+            // Attempt to resolve as a primitive or known type
+            Class<?> typeClass = primSC.getClazz(field.getType());
+            if (typeClass == ProtocolType.class) {
+                throw new RuntimeException(); // Trigger fallback for ProtocolType
+            }
+            classes.add(typeClass); // Add the resolved class for primitive/known type
+            return classes;
+        } catch (Throwable ex) {
+            // Handle complex or custom types
+            Object typeDefinition = typeMap.get(field.getType());
+            if (typeDefinition != null) {
+                // Extract subfields for the complex type
+                List<PacketField> subFields = PacketField.extractFields(typeDefinition);
+
+                // Recursively resolve each subfield's classes
+                for (PacketField subField : subFields) {
+                    classes.addAll(resolveFieldClasses(subField, typeMap));
+                }
+            } else {
+                // Fallback to Object.class for unresolved types
+                classes.add(Object.class);
+            }
+        }
+
+        return classes; // Return all resolved classes for the field
     }
 
 }
