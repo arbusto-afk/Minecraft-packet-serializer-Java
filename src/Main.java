@@ -1,8 +1,11 @@
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import neoutil.Packet;
+import neoutil.PacketField;
 import neoutil.ProtocolMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -98,6 +101,7 @@ public class Main {
         String pcOrBedrock = "pc";
         ObjectMapper mapper = new ObjectMapper();
         ProtocolMapper protocol = mapper.readValue(new File("minecraft-data/data/" + pcOrBedrock + "/" + version + "/protocol.json"), ProtocolMapper.class);
+        protocol.getPackets().get(78).getClasses(protocol.getTypes());
         System.out.println(protocol.getPackets());
 
 //        System.out.println(protocol.getTypes());

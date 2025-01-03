@@ -9,13 +9,13 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class ProtocolMapper {
-    private Map<String, List<PacketField>> types;
+    private Map<String, List<PacketField>> types = new HashMap<>();
     private final Map<String, Map<String, Map<String, Packet>>> packets = new LinkedHashMap<>();
     @JsonProperty("types")
     public void setTypes(Map<String, Object> types) {
        // this.types = types;
         for(Map.Entry<String, Object> type : types.entrySet()){
-            types.put(type.getKey(), PacketField.extractFields(type.getValue()));
+            this.types.put(type.getKey(), Packet.extractFields(type.getValue()));
         }
     }
 
