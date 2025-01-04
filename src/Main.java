@@ -1,13 +1,9 @@
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
-import neoutil.Packet;
-import neoutil.PacketField;
 import neoutil.ProtocolMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import serializables.ProtMapper2;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -100,11 +96,14 @@ public class Main {
         String version = "1.21.3";
         String pcOrBedrock = "pc";
         ObjectMapper mapper = new ObjectMapper();
-        ProtocolMapper protocol = mapper.readValue(new File("minecraft-data/data/" + pcOrBedrock + "/" + version + "/protocol.json"), ProtocolMapper.class);
-        protocol.getPackets().get(78).getClasses(protocol.getTypes());
-        System.out.println(protocol.getPackets());
+        //ProtocolMapper protocol = mapper.readValue(new File("minecraft-data/data/" + pcOrBedrock + "/" + version + "/protocol.json"), ProtocolMapper.class);
+        //protocol.getPackets().get(78).getClasses(protocol.getTypes());
+        //System.out.println(protocol.getPackets());
 
-//        System.out.println(protocol.getTypes());
+       ProtMapper2 prot = mapper.readValue(new File("minecraft-data/data/" + pcOrBedrock + "/" + version + "/protocol.json"), ProtMapper2.class);
+     //   System.out.println(prot.getPackets());
+        System.out.println(prot.getPackets());
+        //        System.out.println(protocol.getTypes());
         //varint, 32 , 32 ,32 ,16
 
         //65 explosion | vec3, optional vec3, particle, varint, switch

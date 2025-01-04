@@ -1,8 +1,8 @@
 package serializables.Types;
 
-import serializables.ProtocolType;
+import serializables.Complex.UnsupNativeUsedInPrimSC;
 
-public enum primSC {
+public enum PrimSC {
     varint(VarInt.class),
     varlong(VarLong.class),
     optvarint(Option.class),
@@ -24,14 +24,14 @@ public enum primSC {
     string(String.class);
 
     Class<?> serClass;
-    primSC(Class<?> c){
+    PrimSC(Class<?> c){
         serClass = c;
     }
     Class<? > getClazz(){
         return this.serClass;
     }
     public static Class<?> getClazz(String s){
-        Class<?> clazz = ProtocolType.class;
+        Class<?> clazz = UnsupNativeUsedInPrimSC.class;
         try {
             clazz = valueOf(s).getClazz();
         } catch (Throwable ex){
