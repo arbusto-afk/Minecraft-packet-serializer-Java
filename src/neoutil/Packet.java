@@ -2,8 +2,8 @@ package neoutil;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import serializables.ProtocolType;
-import serializables.Types.PrimSC;
+import Serializables.ProtocolType;
+import Serializables.Types.PrimitiveMapper;
 
 import java.util.*;
 
@@ -71,7 +71,7 @@ public class Packet {
             Class<?> fieldClass = Object.class; // Default to Object.class
             try {
                 //String className = "serializables.Types." + f.getType();
-                fieldClass = PrimSC.getClazz(f.getType());
+                fieldClass = PrimitiveMapper.getClassOrException(f.getType());
             } catch (Throwable ex) {
                 // Log or print the issue for debugging purposes
                 System.err.println("Class not found: " + f.getType() + ", defaulting to Object.class");
@@ -108,7 +108,7 @@ public class Packet {
 
         try {
             // Attempt to resolve as a primitive or known type
-            Class<?> typeClass = PrimSC.getClazz(field.getType());
+            Class<?> typeClass = PrimitiveMapper.getClassOrException(field.getType());
             if (typeClass == ProtocolType.class) {
                 throw new RuntimeException(); // Trigger fallback for ProtocolType
             }
@@ -133,7 +133,7 @@ public class Packet {
                 //alias or arr
                 if(field.getType().contains("sf")){
                     String subString = field.getType().substring(4, field.getType().lastIndexOf(")"));
-                    classes.add(PrimSC.getClazz(subString));
+                    classes.add(PrimitiveMapper.getClassOrException(subString));
                 }
                 else if(field.getSubFields() != null && field.getSubFields().size() == 1){
                     String childType = field.getSubFields().getFirst().getType();

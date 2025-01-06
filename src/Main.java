@@ -1,9 +1,8 @@
 import java.io.File;
 import java.io.IOException;
 
-import neoutil.ProtocolMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import serializables.ProtMapper2;
+import Serializables.ProtMapper2;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -89,8 +88,6 @@ import serializables.ProtMapper2;
          }
      }
 */
-
-
 public class Main {
     public static void main(String[] args) throws IOException {
         String version = "1.21.3";
@@ -101,13 +98,45 @@ public class Main {
         //System.out.println(protocol.getPackets());
 
        ProtMapper2 prot = mapper.readValue(new File("minecraft-data/data/" + pcOrBedrock + "/" + version + "/protocol.json"), ProtMapper2.class);
-     //   System.out.println(prot.getPackets());
         System.out.println(prot.getPackets());
+    //    System.out.println(prot.getPackets());
         //        System.out.println(protocol.getTypes());
         //varint, 32 , 32 ,32 ,16
 
         //65 explosion | vec3, optional vec3, particle, varint, switch
         //
+
+    }
+    private static void generateJavaSource(Class<?> clazz) throws Exception {
+        StringBuilder source = new StringBuilder();
+
+        // Generate the package statement
+        String packageName = clazz.getPackageName();
+        if (!packageName.isEmpty()) {
+            source.append("package ").append(packageName).append(";\n\n");
+        }
+
+        // Start the class definition
+        source.append("public class ").append(clazz.getSimpleName()).append(" {\n");
+
+        // Add methods
+        for (var method : clazz.getDeclaredMethods()) {
+            source.append("    public ").append(method.getReturnType().getSimpleName())
+                    .append(" ").append(method.getName()).append("() {\n")
+                    .append("        return ").append("\"Hello, world!\";").append("\n") // Example logic
+                    .append("    }\n");
+        }
+
+        // End the class definition
+        source.append("}\n");
+
+        // Write the source to a .java file
+        String classFilePath = "src/" + packageName.replace('.', '/') + "/" + clazz.getSimpleName() + ".java";
+        java.nio.file.Path path = java.nio.file.Paths.get(classFilePath);
+        java.nio.file.Files.createDirectories(path.getParent());
+        java.nio.file.Files.writeString(path, source.toString());
+
+        System.out.println("Class source written to: " + classFilePath);
     }
 }
 
