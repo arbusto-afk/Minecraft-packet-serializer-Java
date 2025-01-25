@@ -1,6 +1,8 @@
 package Serializables.Complex;
 
-import java.util.Arrays;
+import Serializables.Types.PrimitiveMapper;
+
+import java.util.*;
 
 public class TypeDescriptor {
     private final Class<?> type;
@@ -10,7 +12,7 @@ public class TypeDescriptor {
     public TypeDescriptor(Class<?> type, String name) {
         this.type = type;
         this.name = name;
-        this.args = new Object[0];
+        this.args = new Object[]{};
     }
     public TypeDescriptor(Class<?> type, String name, Object[] args)
     {
@@ -39,5 +41,23 @@ public class TypeDescriptor {
     public String toString() {
        return name + " [" + extractLast(type.getName()) + "<" + Arrays.toString(args) + ">]";
     }
+    public Object getBuilder() {
+        //if(cl)
+        try {
+            ArrayList<Object> builder = new ArrayList<Object>();
+            if(args.length > 0) {
+                for (Object arg : args) {
+                    builder.add(((TypeDescriptor) (arg)).getBuilder());
+                }
+                return builder.toArray();
+            } else {
+                return PrimitiveMapper.getClassOrException(name).getDeclaredConstructors()[0].getParameterTypes()[0];
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }
 

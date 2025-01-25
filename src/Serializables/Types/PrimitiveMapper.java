@@ -1,5 +1,8 @@
 package Serializables.Types;
 
+import Serializables.Complex.Container;
+import Serializables.Complex.Mapper;
+import Serializables.Complex.Switch;
 import Serializables.Complex.UnsupNativeUsedInPrimSC;
 
 public enum PrimitiveMapper {
@@ -22,7 +25,10 @@ public enum PrimitiveMapper {
     UUID(Serializables.Types.UUID.class),
    // option(Option.class),
     pstring(String.class),
-    anonymousNbt(String.class);
+    anonymousnbt(String.class),
+    mapper(Mapper.class),
+    switchInternal(Switch.class),
+    container(Container.class);
 
     Class<?> serClass;
     PrimitiveMapper(Class<?> c){
