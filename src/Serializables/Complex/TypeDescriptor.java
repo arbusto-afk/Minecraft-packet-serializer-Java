@@ -1,7 +1,10 @@
 package Serializables.Complex;
 
+import Serializables.ProtocolType;
 import Serializables.Types.PrimitiveMapper;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 import java.util.*;
 
 public class TypeDescriptor {
@@ -41,23 +44,82 @@ public class TypeDescriptor {
     public String toString() {
        return name + " [" + extractLast(type.getName()) + "<" + Arrays.toString(args) + ">]";
     }
-    public Object getBuilder() {
+    public Object getBuilder()  {
         //if(cl)
         try {
-            ArrayList<Object> builder = new ArrayList<Object>();
-            if(args.length > 0) {
-                for (Object arg : args) {
-                    builder.add(((TypeDescriptor) (arg)).getBuilder());
+            if (args.length != 0) {
+                if (type == Container.class) {
+                    List<TypeDescriptor> arr = new ArrayList<TypeDescriptor>();
+
+                    for (Object arg : args) {
+                        if(arg instanceof TypeDescriptor) {
+                            arr.add((TypeDescriptor) arg);
+                        } else {
+                            System.out.println("unrecognized class arg:" + arg + ":>" + arg.getClass());
+                            arr.add(null);
+                        }
+                    }
+                    TypeDescriptor[] arr2 = arr.toArray(new TypeDescriptor[arr.size()]);
+                    var typeInstance = (ComplexType) type.getDeclaredConstructors()[0].newInstance((Object) (arr2));
+                    return typeInstance.getBuilder();
                 }
-                return builder.toArray();
-            } else {
-                return PrimitiveMapper.getClassOrException(name).getDeclaredConstructors()[0].getParameterTypes()[0];
+                else {
+                    List<Class<?>> classes = new ArrayList<>();
+                    for(Object arg : args) {
+                        if (arg instanceof Map) {
+                            classes.add(Map.class);
+                        } else {
+                            classes.add(arg.getClass());
+                        }
+                    }
+                    Class<?>[] classArr = classes.toArray(new Class<?>[classes.size()]);
+                    ComplexType typeInstance;
+                    if(type == BitfieldComponent.class){
+                        typeInstance = (ComplexType) type.getDeclaredConstructors()[0].newInstance(args);
+                    }
+                    else {
+                         typeInstance = (ComplexType) type.getDeclaredConstructor(classArr).newInstance(args);
+                    }
+                    return typeInstance.getBuilder();
+                }
+                //return typeInstance.getBuilder();
+
             }
-        } catch(Exception e) {
+            return type;
+/*        } catch(IllegalArgumentException ex) {
+            System.out.println("argument mismatch for " + type + "with name: " + name);
+                  for(Object arg : args) {
+                      System.out.print(arg.getClass() + ", ");
+                  }
+            System.out.println(Arrays.toString(args));
+            ex.printStackTrace();
+            return args;
+        } catch(NoSuchMethodException ex) {
+            System.out.println("argument mismatch for " + type + "with name: " + name + "Coult not find constructor:");
+            for(Object arg : args) {
+                System.out.print(arg.getClass() + ", ");
+            }
+            System.out.println("All constructors:");
+            System.out.println(Arrays.toString(type.getDeclaredConstructors()));
+            System.out.println(Arrays.toString(args));
+            ex.printStackTrace();
+            return args;
+
+            */
+        }catch(RuntimeException e) {
             e.printStackTrace();
-            return null;
+      //      System.out.println("Could not instantiate " + type + "(" + name + ")with args: " + Arrays.toString(args));
+            throw e;
+      //   return null;
+        } catch(Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
+
+    //registryEntryHolderSet
+    //IDset
+
 
 }
 

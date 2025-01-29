@@ -5,15 +5,15 @@ import java.util.List;
 
 public class Container implements ComplexType {
 
-    private final List<ComplexType> contents;
-    public Container(List<ComplexType> contents){
-        this.contents = contents;
+    private final List<TypeDescriptor> contents;
+    public Container(TypeDescriptor[] contents){
+        this.contents = List.of(contents);
     }
 
-    public List<TypeDescriptor> getBuilder(){
-        List<TypeDescriptor> classes = new ArrayList<>();
-        for(ComplexType ct : contents){
-            classes.addAll(ct.getBuilder());
+    public Object getBuilder(){
+        List<Object> classes = new ArrayList<>();
+        for(TypeDescriptor ct : contents){
+            classes.add(ct.getBuilder());
         }
         return classes;
     }

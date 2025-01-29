@@ -1,9 +1,10 @@
 package Serializables.Complex;
 
-public class Mapper {
+public class Mapper implements ComplexType {
     TypeDescriptor type;
 
-    public Mapper(TypeDescriptor type) {
+
+    public Mapper(TypeDescriptor type ) {
         this.type = type;
     }
     public Object getBuilder(){

@@ -16,5 +16,5 @@ public interface ComplexType extends ProtocolType {
         throw new UnsupportedOperationException();
     }
 
-    List<TypeDescriptor> getBuilder();
+    Object getBuilder();
 }

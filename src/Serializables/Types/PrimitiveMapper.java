@@ -1,9 +1,6 @@
 package Serializables.Types;
 
-import Serializables.Complex.Container;
-import Serializables.Complex.Mapper;
-import Serializables.Complex.Switch;
-import Serializables.Complex.UnsupNativeUsedInPrimSC;
+import Serializables.Complex.*;
 
 public enum PrimitiveMapper {
     varint(VarInt.class),
@@ -28,7 +25,9 @@ public enum PrimitiveMapper {
     anonymousnbt(String.class),
     mapper(Mapper.class),
     switchInternal(Switch.class),
-    container(Container.class);
+    container(Container.class),
+    bit(Bit.class),
+    option(Option.class);
 
     Class<?> serClass;
     PrimitiveMapper(Class<?> c){

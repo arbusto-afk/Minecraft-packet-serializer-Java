@@ -1,6 +1,7 @@
 package Serializables;
 
 import Serializables.Complex.Container;
+import Serializables.Complex.Void;
 import Serializables.Types.VarInt;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,37 +12,25 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 public class ProtMapper2 {
-    private static final Map<String, TypeDescriptor> types = new HashMap<>();
+    private static final Map<String, TypeDescriptor> types = new LinkedHashMap<>();
     private final Map<String, Map<String, Map<String, PacketV2>>> packets = new LinkedHashMap<>();
     @JsonProperty("types")
     public void setTypes(Map<String, Object> types) {
-       // this.types = types;
-        /*
-        for(Map.Entry<String, Object> type : types.entrySet()) {
-            //if nonNative
-            if (!type.getValue().equals("native") ) {
-                this.types.put(type.getKey(), createComplexTypeFromJsonObject(type.getValue()));
 
-
-            }
-            //native
-            else {
-                try {
-                    this.types.put(type.getKey(), new SelfClassableType(PrimitiveMapper.getClassOrException(type.getKey())));
-                } catch (Throwable e) {
-                    System.out.println("ERROR: Could not load native class " + type.getKey());
-                }
-            }
-
-        }*/
+        for(PrimitiveMapper p : PrimitiveMapper.values()){
+            this.types.put(p.name(), new TypeDescriptor(PrimitiveMapper.getClassOrException(p.name()), p.name(), new Object[]{}));
+        }
         for (Map.Entry<String, Object> entry : types.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
-            if(value instanceof String) {
-                this.types.put(key, fieldFromMappedJson(key));
-            } else {
-                this.types.put(key, createTypeDescriptorFromJsonObject(value));
+            if(!this.types.containsKey(key)) {
+                if (false) {
+                    this.types.put(key, fieldFromMappedJson(key));
+                } else {
+                    this.types.put(key, createTypeDescriptorFromJsonObject(value));
+                }
             }
+            System.out.println("Loaded Type: " + key + " -> \n<" + this.types.get(key).getBuilder() + ">");
         }
     }
 
@@ -73,14 +62,25 @@ public class ProtMapper2 {
                     case "buffer":
                         if(((Map<String, Object>)typeJson).get("countType") == null) {
                         //enter her if not length prefixed, fixed length
-                            return new TypeDescriptor(Array.class, complexName, new Object[]{(((Map<String, Object>)typeJson).get("count"))});
+                            return new TypeDescriptor(Array.class, complexName, new Object[]{(((Map<String, Object>)typeJson).get("count")), fieldFromMappedJson("bit")});
                         } else {
-                            return new TypeDescriptor(Array.class, complexName, new Object[]{VarInt.class});
+                            return new TypeDescriptor(Array.class, complexName, new Object[]{fieldFromMappedJson("varint"), fieldFromMappedJson("bit")});
                         }
+                    case "option": {
+                        TypeDescriptor typeD = createTypeDescriptorFromJsonObject(typeJson);
+                        if(type == null) {
+                            var a = 5;
+                        }
+                        return new TypeDescriptor(Option.class, complexName, new Object[]{typeD});
+                    }
+                    case "pstring":
+                        return new TypeDescriptor(String.class, "str", new Object[]{});
+                    case "bitfield":
+                        return bitfieldFromMappedJson(((List<Map<String, Object>>) typeJson));
                     default:
                         final String RESET = "\u001B[0m";
                         final String RED = "\u001B[34m";
-                        return new TypeDescriptor(Object.class, complexName);
+                        return new TypeDescriptor(ComplexType.class, "defaulted:" + complexName);
                 }
             }
             case String s: {
@@ -105,14 +105,14 @@ public class ProtMapper2 {
         TypeDescriptor type = createTypeDescriptorFromJsonObject(map.get("type"));
         if(map.get("countType") == null){
             //count is a field unsupported currently
-            return new TypeDescriptor(Array.class, "fArray", new Object[]{"fieldNameString", type});
+            return new TypeDescriptor(fArray.class, "fArray", new Object[]{(String)map.get("count"), type});
         }
         //should be field so i get[0]
     //    TypeDescriptor countType = createTypeDescriptorFromJsonObject(map.get("countType")).getBuilder().getFirst();
-        return new TypeDescriptor(Array.class, "Array", new Object[]{VarInt.class, type});
+        return new TypeDescriptor(Array.class, "Array", new Object[]{fieldFromMappedJson((String)map.get("countType")), type});
     }
     private static TypeDescriptor mapperFromMappedJson(Map<String, Object> map){
-        return new TypeDescriptor(Mapper.class, "Mapper", new Object[]{map.get("type")});
+        return new TypeDescriptor(Mapper.class, "Mapper", new Object[]{createTypeDescriptorFromJsonObject(map.get("type"))});
     }
     private static TypeDescriptor switchFromMappedJson(Map<String, Object> map){
         Map<String, TypeDescriptor> fieldsMap = new HashMap<>();
@@ -130,12 +130,23 @@ public class ProtMapper2 {
             try {
                 return new TypeDescriptor(PrimitiveMapper.getClassOrException(s.toLowerCase()), s);
             } catch (Throwable ex ) {
+                if(s.equals("void")){
+                    return new TypeDescriptor(Void.class, "void");
+                }
                  final String RESET = "\u001B[0m";
                  final String RED = "\u001B[31m";
                     return new TypeDescriptor(Object.class, RED + "UNRPD_" + s + RESET);
             }
     }
-
+    private static TypeDescriptor bitfieldFromMappedJson(List<Map<String, Object>> l){
+        List<TypeDescriptor> comps = new ArrayList<>();
+        for(Map<String, Object> field : l){
+            TypeDescriptor bFieldComponent = new TypeDescriptor(BitfieldComponent.class, "BFcomp", new Object[]{ field.get("size"), field.get("signed"), (String)field.get("name")});
+            comps.add(bFieldComponent);
+        }
+        TypeDescriptor[] arr = comps.toArray(new TypeDescriptor[comps.size()]);
+        return new TypeDescriptor(Container.class, "bitField", arr);
+    }
     public Map<String, TypeDescriptor> getTypes() {
         return types;
     }
@@ -211,6 +222,17 @@ public class ProtMapper2 {
                 .flatMap(level1 -> level1.values().stream())  // Flatten to second-level maps
                 .flatMap(level2 -> level2.values().stream())  // Flatten to Packet objects
                 .toList();                                   // Collect into a list
+    }
+    public Object buildAll(){
+        Map<String,Object> arr = new LinkedHashMap<>();
+        for(Map.Entry<String, TypeDescriptor> entry : types.entrySet()) {
+            try {
+                arr.put(entry.getKey(), entry.getValue().getBuilder());
+            } catch (Exception e) {
+                System.out.println("Erro|r building: " + entry.getKey());
+            }
+        }
+        return arr;
     }
 
 }
