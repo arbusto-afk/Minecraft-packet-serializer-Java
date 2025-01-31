@@ -13,11 +13,11 @@ public class Array implements ComplexType {
     public Array(TypeDescriptor countType, TypeDescriptor type) {
         this.type = type;
         this.countType = countType;
-        fixedCount = 0;
+        fixedCount = null;
     }
     public Array(Integer fixedCount, TypeDescriptor type) {
-        this.type = null;
-        this.countType = countType;
+        this.type = type;
+        this.countType = null;
         this.fixedCount = fixedCount;
     }
 
@@ -32,7 +32,7 @@ public class Array implements ComplexType {
         //
         List<Object> builder = new ArrayList<Object>();
         builder.add(Array.class);
-        if(fixedCount != null) {
+        if(fixedCount == null) {
             builder.add(countType.getBuilder());
         } else {
             builder.add(fixedCount);

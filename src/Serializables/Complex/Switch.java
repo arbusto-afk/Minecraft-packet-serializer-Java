@@ -17,22 +17,6 @@ public class Switch implements ComplexType{
         this.defaultType = null;
         this.compareToFieldName = compareToFieldName;
     }
-
-
-   /* @Override
-    public List<Object> getBuilder() {
-        List<Object> builder = new ArrayList<>();
-
-        for( Map.Entry<String,TypeDescriptor> entry : fields.entrySet() ) {
-            builder.add(entry.getValue().getBuilder());
-        }
-        if(defaultType != null) {
-            builder.add(defaultType.getBuilder());
-        }
-        return builder;
-    }
-
-    */
    public Map<String, Object> getBuilder() {
        Map<String, Object> map = new LinkedHashMap<>();
        map.put("FIELDNAME", compareToFieldName);

@@ -8,9 +8,14 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 public class TypeDescriptor {
-    private final Class<?> type;
-    private final String name;
-    private final Object[] args;
+    protected final Class<?> type;
+    protected final String name;
+    protected final Object[] args;
+    protected String desc = "";
+
+    public void SetDesc(String desc) {
+        this.desc = desc;
+    }
 
     public TypeDescriptor(Class<?> type, String name) {
         this.type = type;
@@ -43,6 +48,9 @@ public class TypeDescriptor {
     @Override
     public String toString() {
        return name + " [" + extractLast(type.getName()) + "<" + Arrays.toString(args) + ">]";
+    }
+    public TypeDescriptor duplicate(){
+        return new TypeDescriptor(type, name, args);
     }
     public Object getBuilder()  {
         //if(cl)
@@ -85,7 +93,8 @@ public class TypeDescriptor {
                 //return typeInstance.getBuilder();
 
             }
-            return type;
+            else {
+                return desc + "(" + extractLast(type.getName()) + ")";
 /*        } catch(IllegalArgumentException ex) {
             System.out.println("argument mismatch for " + type + "with name: " + name);
                   for(Object arg : args) {
@@ -105,7 +114,7 @@ public class TypeDescriptor {
             ex.printStackTrace();
             return args;
 
-            */
+            */     }
         }catch(RuntimeException e) {
             e.printStackTrace();
       //      System.out.println("Could not instantiate " + type + "(" + name + ")with args: " + Arrays.toString(args));

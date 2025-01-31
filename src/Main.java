@@ -99,7 +99,7 @@ public class Main {
 
        ProtMapper2 prot = mapper.readValue(new File("minecraft-data/data/" + pcOrBedrock + "/" + version + "/protocol.json"), ProtMapper2.class);
         System.out.println(prot.getPackets());
-    //    System.out.println(prot.getPackets());
+        System.out.println(prot.getPackets());
         //        System.out.println(protocol.getTypes());
         //varint, 32 , 32 ,32 ,16
 
