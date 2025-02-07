@@ -1,4 +1,4 @@
-package Serializables.Complex;
+package Serializables.Types;
 
 public class Void {
     public Object getBuilder(){

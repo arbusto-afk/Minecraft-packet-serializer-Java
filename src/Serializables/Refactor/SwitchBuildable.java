@@ -15,8 +15,22 @@ public class SwitchBuildable implements Buildable{
     public SwitchBuildable(String compareToFieldName, Map<String, Buildable> fields) {
         this(compareToFieldName, fields, null);
     }
+
+    @Override
+    public String toString() {
+        return "SwitchBuildable{" +
+                "compareToFieldName='" + compareToFieldName + '\'' +
+                ", fields=" + fields +
+                ", defaultField=" + defaultField +
+                '}';
+    }
+
     public SwitchBuildable getBuildable() {
         return this;
+    }
+
+    public Buildable clone(){
+        return new SwitchBuildable(compareToFieldName, fields, defaultField);
     }
 
 }

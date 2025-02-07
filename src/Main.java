@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.IOException;
 
+import Serializables.ProtocolMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import Serializables.ProtMapper2;
 
@@ -92,15 +93,8 @@ public class Main {
     public static void main(String[] args) throws IOException {
         String version = "1.21.3";
         String pcOrBedrock = "pc";
-        ObjectMapper mapper = new ObjectMapper();
-        //ProtocolMapper protocol = mapper.readValue(new File("minecraft-data/data/" + pcOrBedrock + "/" + version + "/protocol.json"), ProtocolMapper.class);
-        //protocol.getPackets().get(78).getClasses(protocol.getTypes());
-        //System.out.println(protocol.getPackets());
-
-       ProtMapper2 prot = mapper.readValue(new File("minecraft-data/data/" + pcOrBedrock + "/" + version + "/protocol.json"), ProtMapper2.class);
-        System.out.println(prot.getPackets());
-        System.out.println(prot.getPackets());
-        //        System.out.println(protocol.getTypes());
+        ProtocolMapper mapper = new ProtocolMapper(version, pcOrBedrock);
+        return;
         //varint, 32 , 32 ,32 ,16
 
         //65 explosion | vec3, optional vec3, particle, varint, switch

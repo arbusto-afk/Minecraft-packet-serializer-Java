@@ -24,11 +24,7 @@ public enum PrimitiveMapper {
     pstring(String.class),
     anonymousNbt(String.class),
     anonOptionalNbt(String.class),
-    mapper(Mapper.class),
-    switchInternal(Switch.class),
-    container(Container.class),
-    bit(Bit.class),
-    option(Option.class);
+    bit(Bit.class);
 
     Class<?> serClass;
     PrimitiveMapper(Class<?> c){

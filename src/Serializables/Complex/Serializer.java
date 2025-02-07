@@ -22,8 +22,8 @@ public class Serializer {
         }
     }
     public ByteBuffer serialize(String state, String clientboundOrServerBound, String packetName, Object[] params){
-        PacketV2 packet = protMapper.getPacket(state, clientboundOrServerBound, packetName);
-        Object builder = packet.getBuilder();
+    //    PacketV2 packet = protMapper.getPacket(state, clientboundOrServerBound, packetName);
+      //  Object builder = packet.getBuilder();
         return null;
     }
 }
