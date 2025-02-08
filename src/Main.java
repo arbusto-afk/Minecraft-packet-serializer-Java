@@ -1,9 +1,6 @@
-import java.io.File;
 import java.io.IOException;
 
-import Serializables.ProtocolMapper;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import Serializables.ProtMapper2;
+import Serializables.ProtocolSerializer;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -93,7 +90,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         String version = "1.21.3";
         String pcOrBedrock = "pc";
-        ProtocolMapper mapper = new ProtocolMapper(version, pcOrBedrock);
+        ProtocolSerializer mapper = new ProtocolSerializer(version, pcOrBedrock);
         return;
         //varint, 32 , 32 ,32 ,16
 

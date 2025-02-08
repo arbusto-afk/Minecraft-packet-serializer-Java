@@ -9,9 +9,8 @@ import Serializables.Types.PrimitiveMapper;
 import java.util.*;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 
-public class ProtMapper2 {
+public class JsonMapper {
 
     private static final Map<String, Buildable> newTypes = new LinkedHashMap<>();
     private static final Map<String, Map<String, Map<String, PacketV2>>> packets = new LinkedHashMap<>();
@@ -51,10 +50,10 @@ public class ProtMapper2 {
         packets.get(state).get(target).put(name, p);
         newTypes.put(name, packetTypeContent);
         totalPackets.put(name, p);
-        if (p.getBuildable().getClasses() instanceof ContainerField[]) {
-            System.out.println("Loaded packet: " + name + " -> <" + Arrays.toString((ContainerField[]) p.getBuildable().getClasses()) + ">");
+        if (p.getBuildable().flatten() instanceof ContainerField[]) {
+            System.out.println("Loaded packet: " + name + " -> <" + Arrays.toString((ContainerField[]) p.getBuildable().flatten()) + ">");
         } else {
-            System.out.println("Loaded packet: " + name + " -> <" + p.getBuildable().getClasses() + ">");
+            System.out.println("Loaded packet: " + name + " -> <" + p.getBuildable().flatten() + ">");
 
         }
     }

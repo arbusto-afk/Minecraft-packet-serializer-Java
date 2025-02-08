@@ -7,13 +7,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProtocolMapper {
-    private ProtMapper2 prot;
+public class ProtocolSerializer {
+    private JsonMapper prot;
 
-    public ProtocolMapper(String version, String pcOrBedrock) {
+    public ProtocolSerializer(String version, String pcOrBedrock) {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            prot = mapper.readValue(new File("minecraft-data/data/" + pcOrBedrock + "/" + version + "/protocol.json"), ProtMapper2.class);
+            prot = mapper.readValue(new File("minecraft-data/data/" + pcOrBedrock + "/" + version + "/protocol.json"), JsonMapper.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -34,11 +34,11 @@ public class ProtocolMapper {
         List<Object> args = new ArrayList<>();
         if (buildable instanceof ContainerBuildable cb) {
             for (ContainerField field : cb.getContainerFields()) {
-                args.add(field.getBuildable().getClasses());
+                args.add(field.getBuildable().flatten());
             }
             return args;
         } else if(buildable instanceof MapperBuildable mb){
-            return mb.getClasses();
+            return mb.flatten();
         }
         return null;
     }

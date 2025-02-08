@@ -1,7 +1,6 @@
 package Serializables.Complex;
 
-import Serializables.PacketV2;
-import Serializables.ProtMapper2;
+import Serializables.JsonMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
@@ -10,13 +9,13 @@ import java.nio.ByteBuffer;
 public class Serializer {
     private final String pcOrBedrock;
     private final String version;
-    private ProtMapper2 protMapper;
+    private JsonMapper protMapper;
     public Serializer(String pcOrBedrock, String version){
         this.version = version;
         this.pcOrBedrock = pcOrBedrock;
         ObjectMapper mapper = new ObjectMapper();
         try {
-            protMapper = mapper.readValue(new File("minecraft-data/data/" + pcOrBedrock + "/" + version + "/protocol.json"), ProtMapper2.class);
+            protMapper = mapper.readValue(new File("minecraft-data/data/" + pcOrBedrock + "/" + version + "/protocol.json"), JsonMapper.class);
         } catch(Exception e) {
             throw new RuntimeException(e);
         }

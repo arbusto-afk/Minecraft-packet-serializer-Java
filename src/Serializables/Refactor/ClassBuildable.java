@@ -1,8 +1,5 @@
 package Serializables.Refactor;
 
-import Serializables.Refactor.Construct.ConstructItem;
-import Serializables.Refactor.Construct.BasicConstruct;
-
 import java.util.*;
 
 public class ClassBuildable implements Buildable {
@@ -29,7 +26,7 @@ public class ClassBuildable implements Buildable {
     }
 
     @Override
-    public Object getClasses() {
+    public Object flatten() {
         return clazz;
     }
 

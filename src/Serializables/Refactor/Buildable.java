@@ -1,9 +1,5 @@
 package Serializables.Refactor;
 
-import Serializables.Refactor.Construct.ConstructItem;
-
-import java.util.*;
-
 public interface Buildable {
 
 
@@ -22,7 +18,7 @@ public interface Buildable {
         return (lastDotIndex != -1) ? input.substring(lastDotIndex + 1) : input;
     }
 
-    default Object getClasses() {
+    default Object flatten() {
         return this;
     }
 

@@ -1,8 +1,5 @@
 package Serializables.Refactor;
 
-import Serializables.Refactor.Construct.ConstructItem;
-import Serializables.Refactor.Construct.BasicConstruct;
-
 import java.util.*;
 
 public class MapperBuildable implements Buildable {
@@ -27,7 +24,7 @@ public class MapperBuildable implements Buildable {
     }
 
     @Override
-    public Object getClasses() {
+    public Object flatten() {
         return possibleValues;
     }
 }

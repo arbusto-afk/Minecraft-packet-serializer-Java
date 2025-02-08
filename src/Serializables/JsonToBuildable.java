@@ -136,7 +136,7 @@ public class JsonToBuildable {
         }
     }
     public Buildable switch2(Map<String,Object> map){
-        Map<String, Buildable> fieldsMap = new HashMap<>();
+        Map<String, Object> fieldsMap = new HashMap<>();
         for(Map.Entry<String, Object> entry : ((Map<String, Object>)(map.get("fields"))).entrySet()){
             fieldsMap.put(entry.getKey(), createBuildable(entry.getValue()));
         }

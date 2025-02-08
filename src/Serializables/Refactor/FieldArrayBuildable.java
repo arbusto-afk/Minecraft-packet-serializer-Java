@@ -26,10 +26,10 @@ public class FieldArrayBuildable extends PrefArrayBuildable {
     }
 
     @Override
-    public Object getClasses() {
+    public Object flatten() {
         if(type instanceof ClassBuildable clb){
             List<Object> arrayDesc = new ArrayList<>();
-            arrayDesc.add(Array.newInstance((Class<?>) clb.getClasses(), 0).getClass());
+            arrayDesc.add(Array.newInstance((Class<?>) clb.flatten(), 0).getClass());
             arrayDesc.add("fieldArray:'-1'");
             return arrayDesc;
         }

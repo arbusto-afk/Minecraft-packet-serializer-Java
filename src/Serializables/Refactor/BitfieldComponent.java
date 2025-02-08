@@ -1,7 +1,5 @@
 package Serializables.Refactor;
 
-import Serializables.Refactor.Construct.ConstructItem;
-
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -29,7 +27,7 @@ public class BitfieldComponent extends ContainerField {
         return this;
     }
     @Override
-    public BitfieldComponent getClasses() {
+    public BitfieldComponent flatten() {
         return this;
     }
 }

@@ -33,21 +33,21 @@ public class PrefArrayBuildable implements Buildable {
 
     private Object[] flattenType() {
         List<Object> arrayDesc = new ArrayList<>();
-        if(type.getClasses() instanceof Class<?>) {
-            arrayDesc.add(Array.newInstance((Class<?>) type.getClasses(), 0).getClass());
+        if(type.flatten() instanceof Class<?>) {
+            arrayDesc.add(Array.newInstance((Class<?>) type.flatten(), 0).getClass());
          //   arrayDesc.add(countType.getClasses());
             return arrayDesc.toArray();
         }
         else if(type instanceof Buildable b) {
-            if(b.getClasses() instanceof Class<?>) {
-                arrayDesc.add(Array.newInstance((Class<?>) b.getClasses(), 0).getClass());
+            if(b.flatten() instanceof Class<?>) {
+                arrayDesc.add(Array.newInstance((Class<?>) b.flatten(), 0).getClass());
        //         arrayDesc.add(countType.getClasses());
                 return arrayDesc.toArray();
             }
-            if(b.getClasses() instanceof List l) {
+            if(b.flatten() instanceof List l) {
                 arrayDesc.addAll(l);
             } else {
-                arrayDesc.add(b.getClasses());
+                arrayDesc.add(b.flatten());
             }
       //     arrayDesc.add(countType.getClasses());
             return  arrayDesc.toArray();

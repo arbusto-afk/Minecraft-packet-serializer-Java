@@ -1,7 +1,5 @@
 package Serializables.Refactor;
 
-import Serializables.Refactor.Construct.ConstructItem;
-
 import java.util.*;
 
 public class ContainerBuildable implements Buildable{
@@ -26,9 +24,18 @@ public class ContainerBuildable implements Buildable{
     }
 
     @Override
-    public Object getClasses()
+    public Object flatten()
     {
-        return getContainerFields();
+        //return getContainerFields();
+        List<Object> fields = new ArrayList<>();
+        for(ContainerField f : buildables){
+            if(f.getBuildable() instanceof ContainerBuildable cb){
+                fields.addAll(Arrays.asList((Object[]) cb.flatten()));
+            } else {
+                fields.add(f.getBuildable());
+            }
+        }
+        return fields.toArray();
         /*
         List<Object> returnArr = new ArrayList<>();
         for(ContainerField cf : getContainerFields()){
