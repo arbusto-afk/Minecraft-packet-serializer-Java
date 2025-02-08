@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 public class SwitchBuildable implements Buildable{
     protected final String compareToFieldName;
     protected final Map<String, Object> fields;
-    protected final Buildable defaultField;
+    protected final Buildable[] defaultField;
 
-    public SwitchBuildable(String compareToFieldName, Map<String, Object> fields, Buildable defaultField) {
+    public SwitchBuildable(String compareToFieldName, Map<String, Object> fields, Buildable[] defaultField) {
         this.compareToFieldName = compareToFieldName;
         this.fields = fields.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> {
             if(e.getValue() instanceof ContainerBuildable) {

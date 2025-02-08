@@ -25,10 +25,10 @@ public class ClassBuildable implements Buildable {
         return extractLast(clazz.getSimpleName());
     }
 
-    @Override
-    public Object flatten() {
-        return clazz;
-    }
+  //  @Override
+  //  public Object flatten() {
+  //      return clazz;
+   // }
 
     public Class<?> getBuildableClass() {
         return clazz;

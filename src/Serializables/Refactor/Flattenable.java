@@ -18,8 +18,8 @@ public interface Buildable {
         return (lastDotIndex != -1) ? input.substring(lastDotIndex + 1) : input;
     }
 
-    default Object flatten() {
-        return this;
+    default Buildable[] flatten() {
+        return new Buildable[]{this};
     }
 
 }

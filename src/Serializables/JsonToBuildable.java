@@ -92,7 +92,7 @@ public class JsonToBuildable {
     public  Buildable container2(List<Map<String,Object>> maps){
         List<ContainerField> containerFields = new ArrayList<>();
         for(Map<String, Object> field : maps){
-            containerFields.add(new ContainerField(createBuildable(field), ((field.get("name")) == null ? "anon": (String) field.get("name"))));
+            containerFields.add(new ContainerField(createBuildable(field).flatten(), ((field.get("name")) == null ? "anon": (String) field.get("name"))));
         }
         return new ContainerBuildable(containerFields.toArray(new ContainerField[0]));
     }
@@ -143,7 +143,7 @@ public class JsonToBuildable {
         if(!map.containsKey("default")){
             return new SwitchBuildable((String)map.get("compareTo"), fieldsMap);
         }
-        return new SwitchBuildable((String)map.get("compareTo"), fieldsMap, createBuildable(map.get("default")));
+        return new SwitchBuildable((String)map.get("compareTo"), fieldsMap, createBuildable(map.get("default")).flatten());
     }
     private Buildable bitflags(Map<String, Object> map){
         Map<String, String> mapperMap = new LinkedHashMap<>();

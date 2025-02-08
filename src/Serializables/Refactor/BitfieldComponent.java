@@ -26,8 +26,4 @@ public class BitfieldComponent extends ContainerField {
     public Buildable getBuildable() {
         return this;
     }
-    @Override
-    public BitfieldComponent flatten() {
-        return this;
-    }
 }

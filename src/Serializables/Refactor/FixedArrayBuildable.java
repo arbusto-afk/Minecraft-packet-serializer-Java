@@ -24,15 +24,15 @@ public class FixedArrayBuildable extends PrefArrayBuildable {
                 "size=" + size +
                 '}';
     }
-
-    @Override
-    public Object flatten() {
-        if(type instanceof ClassBuildable clb){
-            List<Object> arrayDesc = new ArrayList<>();
-            arrayDesc.add(Array.newInstance((Class<?>) clb.flatten(), 0).getClass());
-            arrayDesc.add(size);
-            return arrayDesc;
-        }
-        return this;
-    }
+//
+//    @Override
+//    public Object flatten() {
+//        if(type instanceof ClassBuildable clb){
+//            List<Object> arrayDesc = new ArrayList<>();
+//            arrayDesc.add(Array.newInstance((Class<?>) clb.flatten(), 0).getClass());
+//            arrayDesc.add(size);
+//            return arrayDesc;
+//        }
+//        return this;
+//    }
 }

@@ -23,8 +23,8 @@ public class MapperBuildable implements Buildable {
         return new MapperBuildable(possibleValues, type);
     }
 
-    @Override
-    public Object flatten() {
-        return possibleValues;
-    }
+//    @Override
+//    public Object flatten() {
+//        return possibleValues;
+//    }
 }

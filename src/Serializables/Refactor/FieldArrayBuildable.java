@@ -24,7 +24,7 @@ public class FieldArrayBuildable extends PrefArrayBuildable {
                 "countFieldName='" + countFieldName + '\'' +
                 '}';
     }
-
+/*
     @Override
     public Object flatten() {
         if(type instanceof ClassBuildable clb){
@@ -35,4 +35,6 @@ public class FieldArrayBuildable extends PrefArrayBuildable {
         }
         return this;
     }
+    */
+
 }

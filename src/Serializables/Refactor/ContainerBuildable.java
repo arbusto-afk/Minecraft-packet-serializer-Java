@@ -24,32 +24,9 @@ public class ContainerBuildable implements Buildable{
     }
 
     @Override
-    public Object flatten()
+    public Buildable[] flatten()
     {
-        //return getContainerFields();
-        List<Object> fields = new ArrayList<>();
-        for(ContainerField f : buildables){
-            if(f.getBuildable() instanceof ContainerBuildable cb){
-                fields.addAll(Arrays.asList((Object[]) cb.flatten()));
-            } else {
-                fields.add(f.getBuildable());
-            }
-        }
-        return fields.toArray();
-        /*
-        List<Object> returnArr = new ArrayList<>();
-        for(ContainerField cf : getContainerFields()){
-            if(cf.getClasses().getClass().isArray()){
-                returnArr.addAll(Arrays.asList((Object[])cf.getClasses()));
-            } else if(cf.getClasses() instanceof Collection) {
-                // Flatten nested collections
-                returnArr.addAll((Collection<?>) cf.getClasses());
-            } else {
-                returnArr.add(cf.getClasses());
-            }
-        }
-       return returnArr;
-    */
+        return buildables;
     }
 
 }
