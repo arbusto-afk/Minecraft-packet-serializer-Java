@@ -5,4 +5,5 @@ public interface ProtocolType {
         byte[] serialize();
 
         void serializeInto(ByteBuffer buffer);
+
 }

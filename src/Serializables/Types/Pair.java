@@ -1,3 +1,5 @@
+package Serializables.Types;
+
 public class Pair<L,R> {
     final private L left;
     final private R right;

@@ -1,6 +1,6 @@
 package Serializables.Complex;
 
-import Serializables.Refactor.BitfieldComponent;
+import Serializables.Refactor.BitfieldField;
 
 import java.util.*;
 
@@ -79,7 +79,7 @@ public class TypeDescriptor {
                     }
                     Class<?>[] classArr = classes.toArray(new Class<?>[classes.size()]);
                     ComplexType typeInstance;
-                    if(type == BitfieldComponent.class){
+                    if(type == BitfieldField.class){
                         typeInstance = (ComplexType) type.getDeclaredConstructors()[0].newInstance(args);
                     }
                     else {

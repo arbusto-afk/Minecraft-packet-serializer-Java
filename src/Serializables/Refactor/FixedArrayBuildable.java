@@ -2,19 +2,15 @@ package Serializables.Refactor;
 
 import Serializables.Types.VarInt;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.List;
-
 public class FixedArrayBuildable extends PrefArrayBuildable {
     protected final int size;
-    public FixedArrayBuildable(int size, Buildable type) {
+    public FixedArrayBuildable(int size, Flattenable[] type) {
         super(new ClassBuildable(VarInt.class), type);
         this.size = size;
     }
 
     @Override
-    public Buildable clone() {
+    public Flattenable clone() {
         return new FixedArrayBuildable(size, type);
     }
 

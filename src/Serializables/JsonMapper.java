@@ -6,28 +6,32 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import Serializables.Types.PrimitiveMapper;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 public class JsonMapper {
 
-    private static final Map<String, Buildable> newTypes = new LinkedHashMap<>();
+    private static final Map<String, Flattenable[]> newTypes = new LinkedHashMap<>();
     private static final Map<String, Map<String, Map<String, PacketV2>>> packets = new LinkedHashMap<>();
     private static final Multimap<String, PacketV2> totalPackets = ArrayListMultimap.create();
     private static final JsonToBuildable builder = new JsonToBuildable(newTypes);
     @JsonProperty("types")
     public void setTypes(Map<String, Object> types) {
-        newTypes.put("void", new ClassBuildable(Void.class));
-        newTypes.put("string", new ClassBuildable(String.class));
-        newTypes.put("restBuffer", new RestBufferBuildable());
+        newTypes.put("void", new Flattenable[]{new ClassBuildable(Void.class)});
+        newTypes.put("string", new Flattenable[]{new ClassBuildable(String.class)});
+        newTypes.put("restBuffer", new Flattenable[]{new RestBufferBuildable()});
         for(PrimitiveMapper p : PrimitiveMapper.values()){
-            this.newTypes.put(p.name(), new ClassBuildable(PrimitiveMapper.getClassOrException(p.name())));
+            this.newTypes.put(p.name(), new Flattenable[]{new ClassBuildable(PrimitiveMapper.getClassOrException(p.name()))});
         }
         String[] exclusion = {"array", "buffer", "option", "bitfield", "container", "switch", "bitflags"};
         for(Map.Entry<String, Object> entry : types.entrySet()) {
             if(!newTypes.containsKey(entry.getKey()) && !Arrays.stream(exclusion).anyMatch(ex -> ex.equals(entry.getKey()))) {
-                newTypes.put(entry.getKey(), builder.createBuildable(entry.getValue()));
+                newTypes.put(entry.getKey(), builder.createTypeBuildable(entry.getValue()));
                 if((newTypes.get(entry.getKey()).toString().contains("Object") || newTypes.get(entry.getKey()).toString().contains("ComplexT")) && !Arrays.stream(exclusion).anyMatch(entry.getKey()::equals)) {
             //        System.err.println("Could not load type " + entry.getKey() + "-> " + newTypes.get(entry.getKey()));
                 System.out.println("Unbuildable: " + entry.getKey());
@@ -36,7 +40,7 @@ public class JsonMapper {
         }
     }
 
-    public Map<String, Buildable> getTypes() {
+    public Map<String, Flattenable[]> getTypes() {
         return newTypes;
     }
     public Map<String, Map<String, Map<String, PacketV2>>> getPackets() {
@@ -44,17 +48,44 @@ public class JsonMapper {
     }
     public Multimap<String, PacketV2> getTotalPackets() { return totalPackets; }
 
+
+    private boolean test = true;
     private void forEachPacket(String name, Object contents, String state, String target) {
-        Buildable packetTypeContent = builder.createBuildable(contents);
+        Flattenable[] packetTypeContent = builder.createBuildable(contents);
         PacketV2 p = new PacketV2(name, packetTypeContent);
         packets.get(state).get(target).put(name, p);
         newTypes.put(name, packetTypeContent);
         totalPackets.put(name, p);
-        if (p.getBuildable().flatten() instanceof ContainerField[]) {
-            System.out.println("Loaded packet: " + name + " -> <" + Arrays.toString((ContainerField[]) p.getBuildable().flatten()) + ">");
-        } else {
-            System.out.println("Loaded packet: " + name + " -> <" + p.getBuildable().flatten() + ">");
+   //     System.out.println("Loaded packet: " + name + " -> <" + Arrays.toString(p.getFields()) + ">");
+        if(name.startsWith("packet")) {
+            StringBuilder s = new StringBuilder().append("record ").append(state + "_" + target + "_" + name).append("( \n");
+            for (String packetS : p.flattenAsString()) {
+                s.append("\t" + packetS.replace(";", ","));
+            }
+            if (s.lastIndexOf(",") != -1) {
+                int lastComma = s.lastIndexOf(",\n");
+                if (lastComma != -1) {
+                    s.deleteCharAt(lastComma);
+                }
+            }
+            String temp = s.toString().replaceAll("\n\t*", "\n\t");;
+            temp += "){\n";
 
+            String s1 = "\tpublic Byte[] serialize() {\n\t\tObject[] fields = new Object[]{"+  p.fieldNames() +
+                    "};\n\t\treturn new Byte[0];\n\t}\n";
+
+            String s124 = "}\n";
+
+            try {
+                Path path = Paths.get("output.java");
+                if (test) {
+                    Files.write(path, "import Serializables.*;\nimport Serializables.Types.*;\n".getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                    test = false;
+                }
+                Files.write(path, (temp + s1 + s124).getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
     @JsonAnySetter

@@ -2,19 +2,15 @@ package Serializables.Refactor;
 
 import Serializables.Types.VarInt;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.List;
-
 public class FieldArrayBuildable extends PrefArrayBuildable {
     protected final String countFieldName;
-    public FieldArrayBuildable(String countFieldName, Buildable type) {
+    public FieldArrayBuildable(String countFieldName, Flattenable[] type) {
         super(new ClassBuildable(VarInt.class), type);
         this.countFieldName = countFieldName;
     }
 
     @Override
-    public Buildable clone() {
+    public Flattenable clone() {
         return new FieldArrayBuildable(countFieldName, type);
     }
 
@@ -24,6 +20,7 @@ public class FieldArrayBuildable extends PrefArrayBuildable {
                 "countFieldName='" + countFieldName + '\'' +
                 '}';
     }
+
 /*
     @Override
     public Object flatten() {

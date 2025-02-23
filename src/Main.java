@@ -98,6 +98,7 @@ public class Main {
         //
 
     }
+
     private static void generateJavaSource(Class<?> clazz) throws Exception {
         StringBuilder source = new StringBuilder();
 
@@ -129,6 +130,11 @@ public class Main {
 
         System.out.println("Class source written to: " + classFilePath);
     }
+
+    record asd(Integer a, Integer b) {
+        static int asd = 15;
+    }
 }
+
 
 
