@@ -182,7 +182,12 @@ public class JsonToBuildable {
         Flattenable[] type = createBuildable(map.get("type"));
         if (map.get("countType") == null) {
             //field
-            return new FieldArrayBuildable((String) map.get("count"), type);
+            Object o = map.get("count");
+            if (o instanceof Integer i) {
+                return new FixedArrayBuildable(i , type);
+            } else {
+                return new FieldArrayBuildable((String)o, type);
+            }
         }
         try {
             return new PrefArrayBuildable((ClassBuildable) createBuildable(map.get("countType"))[0], type);

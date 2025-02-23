@@ -70,10 +70,6 @@ public class SwitchBuildable implements Flattenable {
 
         // Process the map entries
         for (Map.Entry<List<Flattenable>, List<String>> e : map.entrySet()) {
-//            if(e.getKey().size() == 1 && e.getKey().getFirst() instanceof ClassBuildable) {
-//                System.out.println(((ClassBuildable) e.getKey().getFirst()).fsArr("")[0].getRight());
-//         //      System.out.println(((ClassBuildable) e.getKey().getFirst()).fsArr("")[0].getRight().contains("Void"));
-//            }
             if(e.getKey().size() == 1 && e.getKey().getFirst() instanceof ClassBuildable && ((ClassBuildable)e.getKey().getFirst()).fsArr("")[0].getRight().contains("Void")) {
                 skippedValues.addAll(e.getValue());
             } else {

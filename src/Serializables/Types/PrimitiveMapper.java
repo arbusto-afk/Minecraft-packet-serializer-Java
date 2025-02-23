@@ -21,9 +21,10 @@ public enum PrimitiveMapper {
     f64(f32.class),
     UUID(Serializables.Types.UUID.class),
    // option(Option.class),
-    pstring(String.class),
-    anonymousNbt(String.class),
-    anonOptionalNbt(String.class),
+    pstring(mcString.class),
+    anonymousNbt(Nbt.class),
+    anonOptionalNbt(Nbt.class),
+    nbt(Nbt.class),
     bit(Bit.class);
 
     Class<?> serClass;

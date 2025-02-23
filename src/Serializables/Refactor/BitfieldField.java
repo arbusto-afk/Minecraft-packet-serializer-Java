@@ -1,6 +1,7 @@
 package Serializables.Refactor;
 
 import Serializables.Types.Pair;
+import Serializables.Types.*;
 
 public class BitfieldField extends ContainerField {
     int size;
@@ -20,11 +21,11 @@ public class BitfieldField extends ContainerField {
     public String toString() {
         return name + "(" + (signed ? "" : "u") + size + ")";
     }
-    public static Class<?> getSizeClass(int bits) {
-        if (bits <= 8) return Byte.class;
-        if (bits <= 16) return Short.class;
-        if (bits <= 32) return Integer.class;
-        if (bits <= 64) return Long.class;
+    public static Class<?> getSizeClass(int bits, boolean signed) {
+        if (bits <= 8) return signed ? u8.class : i8.class;
+        if (bits <= 16) return signed ? u16.class : i16.class;
+        if (bits <= 32) return signed ? u32.class : i32.class;
+        if (bits <= 64) return signed ? u64.class : i64.class;
         throw new RuntimeException("Unsupported bits " + bits);
     }
 
@@ -41,11 +42,11 @@ public class BitfieldField extends ContainerField {
 
     @Override
     public String stringify(String name) {
-        return "//" + name +"_" + this.name+  " is a bitmask of size " + size + "\n\t" +getSizeClass(this.size).getSimpleName() + " " + name + "_" + this.name + ";\n";
+        return "//" + name +"_" + this.name+  " is a bitmask of size " + size + "\n\t" +getSizeClass(this.size, signed).getSimpleName() + " " + name + "_" + this.name + ";\n";
     }
 
     @Override
     public Pair<String, String>[] fsArr(String name) {
-        return new Pair[]{new Pair<>(this.name, getSizeClass(this.size).getSimpleName())};
+        return new Pair[]{new Pair<>(this.name, getSizeClass(this.size, signed).getSimpleName())};
     }
 }

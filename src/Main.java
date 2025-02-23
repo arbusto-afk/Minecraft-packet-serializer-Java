@@ -88,7 +88,7 @@ import Serializables.ProtocolSerializer;
 */
 public class Main {
     public static void main(String[] args) throws IOException {
-        String version = "1.21.3";
+        String version = "1.12.2";
         String pcOrBedrock = "pc";
         ProtocolSerializer mapper = new ProtocolSerializer(version, pcOrBedrock);
         return;

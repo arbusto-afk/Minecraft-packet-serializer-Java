@@ -2,10 +2,12 @@ package Serializables;
 
 import Serializables.Types.Void;
 import Serializables.Refactor.*;
+import Serializables.Types.mcString;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import Serializables.Types.PrimitiveMapper;
 
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,7 +25,7 @@ public class JsonMapper {
     @JsonProperty("types")
     public void setTypes(Map<String, Object> types) {
         newTypes.put("void", new Flattenable[]{new ClassBuildable(Void.class)});
-        newTypes.put("string", new Flattenable[]{new ClassBuildable(String.class)});
+        newTypes.put("string", new Flattenable[]{new ClassBuildable(mcString.class)});
         newTypes.put("restBuffer", new Flattenable[]{new RestBufferBuildable()});
         for(PrimitiveMapper p : PrimitiveMapper.values()){
             this.newTypes.put(p.name(), new Flattenable[]{new ClassBuildable(PrimitiveMapper.getClassOrException(p.name()))});
@@ -58,23 +60,71 @@ public class JsonMapper {
         totalPackets.put(name, p);
    //     System.out.println("Loaded packet: " + name + " -> <" + Arrays.toString(p.getFields()) + ">");
         if(name.startsWith("packet")) {
-            StringBuilder s = new StringBuilder().append("record ").append(state + "_" + target + "_" + name).append("( \n");
-            for (String packetS : p.flattenAsString()) {
-                s.append("\t" + packetS.replace(";", ","));
-            }
-            if (s.lastIndexOf(",") != -1) {
-                int lastComma = s.lastIndexOf(",\n");
-                if (lastComma != -1) {
-                    s.deleteCharAt(lastComma);
+            final String className = state + "_" + target + "_" + name;
+            final StringBuilder s = new StringBuilder().append("class ").append(className).append(" extends PacketBase{\n");
+
+            final String arrStr = "\t\tsuper(" + p.fieldNames() + ");\n";
+            if(p.getFields().length != 0) {
+                //create class variables
+                for (String packetS : p.flattenAsString()) {
+                    s.append("\t").append(packetS);
                 }
+
+                //append constructor
+                s.append("\n\tpublic ").append(className).append("(");
+                //insert constructor fields
+                StringBuilder temp = new StringBuilder("\n\t\t");
+                for (String packetS : p.flattenAsString()) {
+                    temp.append(packetS.replace(";", ",").replace("\n", "\n\t\t"));
+                }
+                if (temp.lastIndexOf(",\n") != -1) {
+                    int lastComma = temp.lastIndexOf(",\n");
+                    if (lastComma != -1) {
+                        temp.deleteCharAt(lastComma);
+                    }
+                }
+                if ( false && (p.fieldNames().split(",").length == 1 || p.fieldNames().split(",").length == 2) && !(p.fieldNames().contains("//"))) {
+                    s.append(temp.toString().replace("\n", "").replace("\t", ""));
+                } else {
+                    s.append(temp.toString());
+                }
+
+
+
+                //close constructor args
+                s.deleteCharAt(s.length() - 1);
+                s.append("){\n");
+                s.append(arrStr);
+
+
+                //assign args to fields
+                for (String subString : p.fieldNames().split(",")) {
+                    if(!subString.isEmpty()) {
+                        if (subString.startsWith(" ")) {
+                            s.append("\t\tthis." + subString.substring(1) + " = " + subString + ";\n");
+                        } else {
+                            s.append("\t\tthis." + subString + " = " + subString + ";\n");
+                        }
+                    }
+                }
+                //close constructor
+                s.append("\t}\n");
             }
-            String temp = s.toString().replaceAll("\n\t*", "\n\t");;
-            temp += "){\n";
+            else {
+          //      s.append("\n\tpublic ").append(className).append("(){\n").append(arrStr).append("\n\t}\n");
 
-            String s1 = "\tpublic Byte[] serialize() {\n\t\tObject[] fields = new Object[]{"+  p.fieldNames() +
-                    "};\n\t\treturn new Byte[0];\n\t}\n";
-
-            String s124 = "}\n";
+            }
+//            String s2 = "" +
+//            "\t\tByteBuffer bf = ByteBuffer.allocate(1024);\n"
+//         +  " \t\tfor(Object o : packetFields){\n"
+//             +  " \t\t\tif(o instanceof ProtocolType pt){\n"
+//            +       "\t\t\t\tpt.serializeInto(bf);\n"
+//           +   "  \t\t\t} else {\n"
+//            +      "\t\t\t\tthrow new RuntimeException(\"Attempting to serialize non PT field\" + o);\n"
+//            +    "\t\t\t}\n"
+//           + "\t\t}\n"
+//           + "\t\treturn bf.array();\n}\n";
+            String classEnd = "}\n";
 
             try {
                 Path path = Paths.get("output.java");
@@ -82,12 +132,16 @@ public class JsonMapper {
                     Files.write(path, "import Serializables.*;\nimport Serializables.Types.*;\n".getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
                     test = false;
                 }
-                Files.write(path, (temp + s1 + s124).getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                Files.write(path, ((s + classEnd)).getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
     }
+
+
+
+
     @JsonAnySetter
     public void addPacket(String key, Object value) {
         // Any JSON key that isn't "types" will be treated as a packet

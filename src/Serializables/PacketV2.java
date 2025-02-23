@@ -48,7 +48,7 @@ public class PacketV2 {
         for(Flattenable f : this.fields) {
             sl.add(f.fieldNamesAsCommaSeparatedString("P"));
         }
-        return String.join(", ", sl);
+        return String.join(", ", sl).replace(", ,", ",");
     }
 
 }

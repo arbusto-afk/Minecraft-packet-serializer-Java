@@ -36,7 +36,7 @@ public class MapperBuildable implements Flattenable {
         for(Map.Entry<String, String> entry : possibleValues.entrySet()) {
             strb.append(entry.getKey()).append("=").append(entry.getValue()).append(", ");
         }
-        strb.append("\n").append(type.stringify(name));
+        strb.append("\n\t").append(type.stringify(name));
         return strb.toString();
     }
 

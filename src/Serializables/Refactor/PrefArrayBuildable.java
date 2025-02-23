@@ -52,7 +52,7 @@ public class PrefArrayBuildable implements Flattenable {
             for(Pair<String, String> p1 : t.fsArr(s)){
                 i++;
                 res[0] += "//" + p1.getLeft() + "\n";
-                res[1] += p1.getRight() + ",";
+                res[1] += p1.getRight() + "[],";
             }
         }
         if (res[1].endsWith(",")) {
