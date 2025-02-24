@@ -29,23 +29,37 @@ public class JsonMapper {
     public static void setVersion(String version) {
         JsonMapper.version = version;
         JsonMapper.vString = version.replace(".", "_");
+        outputPath = Paths.get("Protocol_" + vString + ".java");
     }
+
+    public final static List<String> unbuildableTypes = new ArrayList<>();
 
     @JsonProperty("types")
     public void setTypes(Map<String, Object> types) {
         newTypes.put("void", new Flattenable[]{new ClassBuildable(Void.class)});
         newTypes.put("string", new Flattenable[]{new ClassBuildable(mcString.class)});
         newTypes.put("restBuffer", new Flattenable[]{new RestBufferBuildable()});
+        //load types defined in primitiveMapper
         for(PrimitiveMapper p : PrimitiveMapper.values()){
-            this.newTypes.put(p.name(), new Flattenable[]{new ClassBuildable(PrimitiveMapper.getClassOrException(p.name()))});
+            newTypes.put(p.name(), new Flattenable[]{new ClassBuildable(PrimitiveMapper.getClassOrException(p.name()))});
         }
-        String[] exclusion = {"array", "buffer", "option", "bitfield", "container", "switch", "bitflags"};
+        String[] exclusion = {"TopBitSetTerminatedArray","array", "buffer", "option", "bitfield", "container", "switch", "bitflags"};
+
+        //for each type
         for(Map.Entry<String, Object> entry : types.entrySet()) {
             if(!newTypes.containsKey(entry.getKey()) && !Arrays.stream(exclusion).anyMatch(ex -> ex.equals(entry.getKey()))) {
-                newTypes.put(entry.getKey(), builder.createTypeBuildable(entry.getValue()));
-                if((newTypes.get(entry.getKey()).toString().contains("Object") || newTypes.get(entry.getKey()).toString().contains("ComplexT")) && !Arrays.stream(exclusion).anyMatch(entry.getKey()::equals)) {
-            //        System.err.println("Could not load type " + entry.getKey() + "-> " + newTypes.get(entry.getKey()));
-                System.out.println("Unbuildable: " + entry.getKey());
+                Flattenable[] type = builder.createTypeBuildable(entry.getValue());
+                newTypes.put(entry.getKey(), type);
+                boolean buildable = true;
+                for(Flattenable f : type){
+                    if(f.stringify("").contains("Object")){
+                        buildable = false;
+                        break;
+                    }
+                }
+                if(!buildable){
+//                    System.out.println("unbuildable " + entry.getKey());
+                    unbuildableTypes.add(entry.getKey());
                 }
             }
         }

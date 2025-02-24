@@ -41,7 +41,7 @@ public class UUID implements ProtocolType {
         buffer.put(bytes);
     }
 
-    public static UUID readFromBuffer(ByteBuffer buffer) {
+    public static UUID readFrom(ByteBuffer buffer) {
         byte[] bytes = new byte[16];
         buffer.get(bytes);
         return new UUID(new BigInteger(1, bytes));

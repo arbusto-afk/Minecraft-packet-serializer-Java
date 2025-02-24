@@ -41,7 +41,7 @@ public class VarLong implements ProtocolType {
         buffer.put((byte) (tempValue & 0x7F));
     }
 
-    public static VarLong readFromBuffer(ByteBuffer buffer) {
+    public static VarLong readFrom(ByteBuffer buffer) {
         long result = 0;
         int shift = 0;
         byte currentByte;

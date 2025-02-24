@@ -2,8 +2,13 @@ package Serializables;
 import java.nio.ByteBuffer;
 
 public interface ProtocolType {
-        byte[] serialize();
+        default byte[] serialize(){
+                throw new RuntimeException("Method not implemented for : " + this.getClass().getName());
+        }
 
-        void serializeInto(ByteBuffer buffer);
+        default void serializeInto(ByteBuffer buffer){
+                throw new RuntimeException("Method not implemented for : " + this.getClass().getName());
+        };
+
 
 }

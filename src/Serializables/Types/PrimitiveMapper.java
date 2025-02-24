@@ -1,6 +1,8 @@
 package Serializables.Types;
 
 import Serializables.Complex.*;
+import Serializables.ProtocolType;
+import Serializables.Refactor.TopBitSetTerminatedArray;
 
 public enum PrimitiveMapper {
     varint(VarInt.class),
@@ -8,7 +10,7 @@ public enum PrimitiveMapper {
     optvarint(VarInt.class),
     //pstring,
     //buffer,
-    bool(Boolean.class),
+    bool(mcBool.class),
     u8(u8.class),
     u16(u16.class),
     u32(u32.class),
@@ -24,11 +26,13 @@ public enum PrimitiveMapper {
     pstring(mcString.class),
     anonymousNbt(Nbt.class),
     anonOptionalNbt(Nbt.class),
-    nbt(Nbt.class),
-    bit(Bit.class);
+    optionalNbt(Nbt.class),
+    //topBitSetTerminatedArray(TopBitSetTerminatedArray.class),
+    nbt(Nbt.class);
+//    bit(Bit.class);
 
-    Class<?> serClass;
-    PrimitiveMapper(Class<?> c){
+    Class<? extends ProtocolType> serClass;
+    PrimitiveMapper(Class<? extends ProtocolType> c){
         serClass = c;
     }
     Class<? > getClassOrException(){
@@ -43,5 +47,10 @@ public enum PrimitiveMapper {
 //            return clazz;
         }
         return clazz;
+    }
+
+    public static PrimitiveMapper serialize(Class<?> c){
+       // return valueOf();
+        return null;
     }
 }

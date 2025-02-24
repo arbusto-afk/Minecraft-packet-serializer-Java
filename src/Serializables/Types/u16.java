@@ -4,7 +4,8 @@ import Serializables.ProtocolType;
 
 import java.nio.ByteBuffer;
 
-public class u16 implements ProtocolType {
+public
+class u16 implements ProtocolType {
     private final int value;
 
     public u16(int value) {
@@ -14,21 +15,23 @@ public class u16 implements ProtocolType {
         this.value = value;
     }
 
-    public int asInteger() {
+    public int asInt() {
         return value;
     }
 
     @Override
     public byte[] serialize() {
-        return new byte[] {
-                (byte) (value >> 8),
-                (byte) value
-        };
+        ByteBuffer buffer = ByteBuffer.allocate(2);
+        buffer.putShort((short) value);
+        return buffer.array();
     }
 
     @Override
     public void serializeInto(ByteBuffer buffer) {
-        buffer.put((byte) (value >> 8));
-        buffer.put((byte) value);
+        buffer.putShort((short) value);
+    }
+
+    public static u16 readFrom(ByteBuffer buffer) {
+        return new u16(buffer.getShort() & 0xFFFF);
     }
 }

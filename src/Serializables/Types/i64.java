@@ -26,4 +26,9 @@ public class i64 implements ProtocolType {
     public void serializeInto(ByteBuffer buffer) {
         buffer.putLong(value);
     }
+
+
+    public static i64 readFrom(ByteBuffer buffer) {
+        return new i64(buffer.getLong());
+    }
 }

@@ -45,7 +45,7 @@ public class mcString implements ProtocolType {
 
     public static mcString readFromBuffer(ByteBuffer buffer) {
         // Read the length prefix as a VarInt
-        VarInt length = VarInt.readFromBuffer(buffer);
+        VarInt length = VarInt.readFrom(buffer);
 
         // Read the string bytes
         byte[] stringBytes = new byte[length.asInt()];

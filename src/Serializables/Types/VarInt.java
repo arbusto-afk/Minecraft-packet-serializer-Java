@@ -41,7 +41,7 @@ public class VarInt implements ProtocolType {
         buffer.put((byte) (tempValue & 0x7F));
     }
 
-    public static VarInt readFromBuffer(ByteBuffer buffer) {
+    public static VarInt readFrom(ByteBuffer buffer) {
         int result = 0;
         int shift = 0;
         byte currentByte;

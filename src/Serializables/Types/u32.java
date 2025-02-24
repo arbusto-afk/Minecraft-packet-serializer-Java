@@ -4,11 +4,12 @@ import Serializables.ProtocolType;
 
 import java.nio.ByteBuffer;
 
-public class u32 implements ProtocolType {
+public
+class u32 implements ProtocolType {
     private final long value;
 
     public u32(long value) {
-        if (value < 0 || value > 0xFFFFFFFFL) {
+        if (value < 0 || value > 4294967295L) {
             throw new IllegalArgumentException("Value must be between 0 and 4294967295, but was: " + value);
         }
         this.value = value;
@@ -20,19 +21,17 @@ public class u32 implements ProtocolType {
 
     @Override
     public byte[] serialize() {
-        return new byte[] {
-                (byte) (value >> 24),
-                (byte) (value >> 16),
-                (byte) (value >> 8),
-                (byte) value
-        };
+        ByteBuffer buffer = ByteBuffer.allocate(4);
+        buffer.putInt((int) value);
+        return buffer.array();
     }
 
     @Override
     public void serializeInto(ByteBuffer buffer) {
-        buffer.put((byte) (value >> 24));
-        buffer.put((byte) (value >> 16));
-        buffer.put((byte) (value >> 8));
-        buffer.put((byte) value);
+        buffer.putInt((int) value);
+    }
+
+    public static u32 readFrom(ByteBuffer buffer) {
+        return new u32(buffer.getInt() & 0xFFFFFFFFL);
     }
 }

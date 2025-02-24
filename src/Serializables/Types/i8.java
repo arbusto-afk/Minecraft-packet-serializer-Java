@@ -15,12 +15,17 @@ public class i8 implements ProtocolType {
 
     @Override
     public byte[] serialize() {
-        return new byte[] { value };
+        return new byte[]{value};
     }
 
     @Override
     public void serializeInto(ByteBuffer buffer) {
         buffer.put(value);
     }
+
+    public static i8 readFrom(ByteBuffer buffer) {
+        return new i8(buffer.get());
+    }
 }
+
 

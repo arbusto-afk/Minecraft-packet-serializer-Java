@@ -25,5 +25,8 @@ public class f32 implements ProtocolType {
     public void serializeInto(ByteBuffer buffer) {
         buffer.putFloat(value);
     }
-}
 
+    public static f32 readFrom(ByteBuffer buffer) {
+        return new f32(buffer.getFloat());
+    }
+}

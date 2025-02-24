@@ -26,4 +26,8 @@ public class f64 implements ProtocolType {
     public void serializeInto(ByteBuffer buffer) {
         buffer.putDouble(value);
     }
+
+    public static f64 readFrom(ByteBuffer buffer) {
+        return new f64(buffer.getDouble());
+    }
 }

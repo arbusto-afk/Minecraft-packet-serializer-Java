@@ -17,15 +17,17 @@ public class i16 implements ProtocolType {
 
     @Override
     public byte[] serialize() {
-        return new byte[] {
-                (byte) (value >> 8),
-                (byte) value
-        };
+        ByteBuffer buffer = ByteBuffer.allocate(2);
+        buffer.putShort(value);
+        return buffer.array();
     }
 
     @Override
     public void serializeInto(ByteBuffer buffer) {
-        buffer.put((byte) (value >> 8));
-        buffer.put((byte) value);
+        buffer.putShort(value);
+    }
+
+    public static i16 readFrom(ByteBuffer buffer) {
+        return new i16(buffer.getShort());
     }
 }
