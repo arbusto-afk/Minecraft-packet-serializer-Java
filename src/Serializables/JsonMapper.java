@@ -5,9 +5,8 @@ import Serializables.Refactor.*;
 import Serializables.Types.mcString;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import Serializables.Types.PrimitiveMapper;
+import Serializables.Types.jsonDataNameToClassMapper;
 
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -40,8 +39,8 @@ public class JsonMapper {
         newTypes.put("string", new Flattenable[]{new ClassBuildable(mcString.class)});
         newTypes.put("restBuffer", new Flattenable[]{new RestBufferBuildable()});
         //load types defined in primitiveMapper
-        for(PrimitiveMapper p : PrimitiveMapper.values()){
-            newTypes.put(p.name(), new Flattenable[]{new ClassBuildable(PrimitiveMapper.getClassOrException(p.name()))});
+        for(jsonDataNameToClassMapper p : jsonDataNameToClassMapper.values()){
+            newTypes.put(p.name(), new Flattenable[]{new ClassBuildable(jsonDataNameToClassMapper.getClassOrException(p.name()))});
         }
         String[] exclusion = {"TopBitSetTerminatedArray","array", "buffer", "option", "bitfield", "container", "switch", "bitflags"};
 

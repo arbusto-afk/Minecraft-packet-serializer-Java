@@ -2,9 +2,8 @@ package Serializables.Types;
 
 import Serializables.Complex.*;
 import Serializables.ProtocolType;
-import Serializables.Refactor.TopBitSetTerminatedArray;
 
-public enum PrimitiveMapper {
+public enum jsonDataNameToClassMapper {
     varint(VarInt.class),
     varlong(VarLong.class),
     optvarint(VarInt.class),
@@ -32,7 +31,7 @@ public enum PrimitiveMapper {
 //    bit(Bit.class);
 
     Class<? extends ProtocolType> serClass;
-    PrimitiveMapper(Class<? extends ProtocolType> c){
+    jsonDataNameToClassMapper(Class<? extends ProtocolType> c){
         serClass = c;
     }
     Class<? > getClassOrException(){
@@ -49,7 +48,7 @@ public enum PrimitiveMapper {
         return clazz;
     }
 
-    public static PrimitiveMapper serialize(Class<?> c){
+    public static jsonDataNameToClassMapper serialize(Class<?> c){
        // return valueOf();
         return null;
     }

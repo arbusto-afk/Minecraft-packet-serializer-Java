@@ -17,23 +17,15 @@ public class PacketBase {
     }
 
     private static final int TEMP_ALLOC_SIZE = 1024;
-    public byte[] serialize(){
+    public byte[] serialize() {
         ByteBuffer buffer = ByteBuffer.allocate(TEMP_ALLOC_SIZE);
-        for(Object o : fields){
-            switch(o){
-                case i64 n: {
-
-                    break;
-                }
-                case u64 as:{
-                    break;
-
-                }
-                default: {
-
-                }
+        for (Object o : fields) {
+            if (o instanceof ProtocolType pt) {
+                pt.serializeInto(buffer);
+            } else {
+                throw new RuntimeException("Non serializable field for packet:" + o + ">>>>>" + this);
             }
         }
-   return null;
+        return buffer.array();
     }
 }

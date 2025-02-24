@@ -3,7 +3,7 @@ package Serializables;
 import Serializables.Refactor.BitfieldField;
 import Serializables.Complex.ComplexType;
 import Serializables.Refactor.*;
-import Serializables.Types.PrimitiveMapper;
+import Serializables.Types.jsonDataNameToClassMapper;
 
 import java.util.*;
 
@@ -206,7 +206,7 @@ public class JsonToBuildable {
     }
     private Flattenable[] searchOrDefaultField(String s) {
         try {
-            return new Flattenable[]{new ClassBuildable(PrimitiveMapper.getClassOrException(s))};
+            return new Flattenable[]{new ClassBuildable(jsonDataNameToClassMapper.getClassOrException(s))};
         } catch (Exception e) {
             return knownBuildables.get(s);
         }

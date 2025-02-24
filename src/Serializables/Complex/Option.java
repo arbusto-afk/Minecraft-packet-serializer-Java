@@ -1,6 +1,6 @@
 package Serializables.Complex;
 
-import Serializables.Types.PrimitiveMapper;
+import Serializables.Types.jsonDataNameToClassMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ public class Option implements ComplexType{
     }
     public Object getBuilder(){
         List<Object> l = new ArrayList<Object>();
-        l.add(PrimitiveMapper.getClassOrException("bool"));
+        l.add(jsonDataNameToClassMapper.getClassOrException("bool"));
         l.add(type.getBuilder());
         return l;
     }
