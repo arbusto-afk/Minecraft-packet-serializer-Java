@@ -12,11 +12,14 @@ public class ProtocolSerializer {
 
     public ProtocolSerializer(String version, String pcOrBedrock) {
         ObjectMapper mapper = new ObjectMapper();
+        JsonMapper.setVersion(version);
         try {
             prot = mapper.readValue(new File("minecraft-data/data/" + pcOrBedrock + "/" + version + "/protocol.json"), JsonMapper.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
+        prot.generatePacketIdEnums(version);
     }
 
     private PacketV2[] getPacket(String packetName){

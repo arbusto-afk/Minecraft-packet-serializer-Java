@@ -39,7 +39,7 @@ public interface Flattenable {
         }
         List<String> fields = new ArrayList<>();
         for(String subs : s.split("\n")){
-            if(!subs.startsWith("//") && !subs.startsWith("\t//")) {
+            if(!subs.startsWith("//") && !subs.startsWith("\t//") && !subs.startsWith("\t\t//")) {
                 String[] words = subs.split(" ");
                 if (words[words.length - 1].length() == 0) {
                     System.out.println();

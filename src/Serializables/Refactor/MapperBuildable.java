@@ -25,7 +25,11 @@ public class MapperBuildable implements Flattenable {
         return new MapperBuildable(possibleValues, type);
     }
 
-//    @Override
+    public Map<String, String> getPossibleValues() {
+        return possibleValues;
+    }
+
+    //    @Override
 //    public Object flatten() {
 //        return possibleValues;
 //    }

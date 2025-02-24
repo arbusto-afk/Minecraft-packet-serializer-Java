@@ -1,5 +1,6 @@
 import java.io.IOException;
 
+import Serializables.PacketBase;
 import Serializables.ProtocolSerializer;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
@@ -91,6 +92,9 @@ public class Main {
         String version = "1.12.2";
         String pcOrBedrock = "pc";
         ProtocolSerializer mapper = new ProtocolSerializer(version, pcOrBedrock);
+       // var packet = Protocol.configuration_toClient_packet_feature_flags.getId();
+
+     //   PacketBase p = new Protocol.play.toClient.packet_map_chunk();
         return;
         //varint, 32 , 32 ,32 ,16
 
