@@ -106,4 +106,9 @@ public class SwitchBuildable implements Flattenable {
     public Pair<String, String>[] fsArr(String name) {
         return new Pair[]{new Pair<>("Switch: " + this.toString(), "Object")};
     }
+
+    @Override
+    public String[] getSerializers() {
+        return new String[]{"switch.readFrom()"};
+    }
 }

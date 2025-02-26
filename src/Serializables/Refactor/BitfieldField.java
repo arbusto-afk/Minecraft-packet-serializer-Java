@@ -49,4 +49,9 @@ public class BitfieldField extends ContainerField {
     public Pair<String, String>[] fsArr(String name) {
         return new Pair[]{new Pair<>(this.name, getSizeClass(this.size, signed).getSimpleName())};
     }
+
+    @Override
+    public String[] getSerializers() {
+        return new String[]{stringify("")};
+    }
 }

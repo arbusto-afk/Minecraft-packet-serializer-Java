@@ -1,6 +1,7 @@
 package Serializables.Refactor;
 
 import Serializables.Types.Pair;
+import Serializables.Types.jsonDataNameToClassMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,17 +34,34 @@ public class PrefArrayBuildable implements Flattenable {
     @Override
     public String stringify(String name) {
 
-        if(type.length == 1 && type[0] instanceof ClassBuildable){
-            return type[0].fsArr("")[0].getRight() + "[] " + name + ";\n";
+        if(type.length == 1 && type[0] instanceof ClassBuildable cb) {
+            if (cb.getErrorDesc().isEmpty()) {
+                if(type[0].fsArr("")[0].getRight().equals(jsonDataNameToClassMapper.bit.getClazz().getSimpleName()))
+                {
+                    return type[0].fsArr("")[0].getRight() + " "+ name + ";\n";
+                }
+                return type[0].fsArr("")[0].getRight() + "[] " + name + ";\n";
+            } else {
+                    if(type[0].fsArr("")[0].getRight().equals(jsonDataNameToClassMapper.bit.getClazz().getSimpleName()))
+                {
+                    return type[0].fsArr("")[0].getRight() + " " +name + ";\n";
+                }
+                return cb.getErrorDesc() + type[0].fsArr("")[0].getRight() + "[] " + name + ";\n";
+
+            }
         }
         if(type.length == 1 && type[0] instanceof MapperBuildable){
             return type[0].fsArr("")[0].getRight() + "[] " + name + ";\n";
-        }  else if(type.length == 1 && type[0] instanceof PrefArrayBuildable ab){
+        }
+        else if(type.length == 1 && type[0] instanceof PrefArrayBuildable ab){
             return ab.fsArr("")[0].getRight() + "[] " + name + ";\n";
+        }
+        else if(type.length == 1 && type[0] instanceof ContainerField cf){
+            return cf.fsArr("")[0].getRight() + "[] " + name + ";\n";
         }
         String[] res = new String[2];
         res[0] = "";
-        res[1] = "\tnArrayX<";
+        res[1] = "\tTupleX<";
         int i = 0;
         for(Flattenable t : type){
             String s = "-";
@@ -56,20 +74,23 @@ public class PrefArrayBuildable implements Flattenable {
             }
         }
         if (res[1].endsWith(",")) {
-            res[1] = res[1].substring(0, res[1].length() - 1) + ">";
+            res[1] = res[1].substring(0, res[1].length() - 1) + ">[]";
         }
-        res[1] = res[1].replaceFirst("nArrayX<", "nArray" + i + "<");
+        res[1] = res[1].replaceFirst("TupleX<", "Tuple" + i + "<");
         return res[0]  + res[1] + " " + name + ";\n";
     }
 
     @Override
     public Pair<String, String>[] fsArr(String name) {
         if(type.length == 1 && type[0] instanceof ClassBuildable || type[0] instanceof MapperBuildable){
+            if(type[0].fsArr("")[0].getRight().equals(jsonDataNameToClassMapper.bit.getClazz().getSimpleName())){
+                return new Pair[]{new Pair<>(name,type[0].fsArr("")[0].getRight())};
+            }
             return new Pair[]{new Pair<>(name,type[0].fsArr("")[0].getRight() + "[]")};
         } else if(type.length == 1 && type[0] instanceof PrefArrayBuildable ab){
             return new Pair[]{new Pair<>(name,ab.fsArr("")[0].getRight() + "[]")};
         }
-        String res = "nArrayX<";
+        String res = "TupleX<";
         int i = 0;
         for(Flattenable t : type){
             String s = "-";
@@ -81,9 +102,9 @@ public class PrefArrayBuildable implements Flattenable {
             }
         }
         if (res.endsWith(",")) {
-            res = res.substring(0, res.length() - 1) + ">";
+            res = res.substring(0, res.length() - 1) + ">[]";
         }
-        res = res.replaceFirst("nArrayX<", "nArray" + i + "<");
+        res = res.replaceFirst("TupleX<", "Tuple" + i + "<");
         return new Pair[]{new Pair<>(name, res)};
     }
     @Override
@@ -109,56 +130,4 @@ public class PrefArrayBuildable implements Flattenable {
         return Objects.hash(countType);
     }
 
-    ////
-//    private Object[] flattenType() {
-//        List<Object> arrayDesc = new ArrayList<>();
-//        if(type.flatten() instanceof Class<?>) {
-//            arrayDesc.add(Array.newInstance((Class<?>) type.flatten(), 0).getClass());
-//         //   arrayDesc.add(countType.getClasses());
-//            return arrayDesc.toArray();
-//        }
-//        else if(type instanceof Buildable b) {
-//            if(b.flatten() instanceof Class<?>) {
-//                arrayDesc.add(Array.newInstance((Class<?>) b.flatten(), 0).getClass());
-//       //         arrayDesc.add(countType.getClasses());
-//                return arrayDesc.toArray();
-//            }
-//            if(b.flatten() instanceof List l) {
-//                arrayDesc.addAll(l);
-//            } else {
-//                arrayDesc.add(b.flatten());
-//            }
-//      //     arrayDesc.add(countType.getClasses());
-//            return  arrayDesc.toArray();
-//        }
-//        throw new RuntimeException("Unsupported type: " + type.getClass());
-//    }
-
-
-   /* @Override
-    public String[] flattenAsString() {
-        List<String> list = new ArrayList<String>();
-        if(builtType.length == 1 && (builtType[0] instanceof ClassBuildable || builtType[0] instanceof PrefArrayBuildable)) {
-            String str = Arrays.toString(builtType[0].flattenAsString());
-            return new String[]{str.substring(1, str.length() - 1) + "[]"};
-        }
-        for(Flattenable t : builtType) {
-            if (t instanceof ContainerField cf) {
-                if (cf.flattenable.length == 1 && cf.flattenable[0] instanceof MapperBuildable) {
-                    list.add(cf.flattenAsString()[1].substring(0, cf.flattenAsString()[1].indexOf(" ")));
-                } else {
-                    list.addAll(Arrays.asList(cf.flattenAsStringClassOnly()));
-                }
-            } else if(t instanceof MapperBuildable){
-                list.add(t.flattenAsString()[t.flattenAsString().length - 1]);
-            }else {
-                list.addAll(Arrays.asList(t.flattenAsString()));
-            }
-        }
-
-        String str = Arrays.toString(list.toArray());
-        return new String[]{"nArray" + builtType.length +"<" + str.substring(1, str.length()-1) + ">"};
-    }
-
-    */
 }

@@ -6,10 +6,22 @@ import java.util.Objects;
 
 public class ClassBuildable implements Flattenable {
     private final Class<?> clazz;
+    private final String errorDesc;
 
     public ClassBuildable(Class<?> clazz) {
         this.clazz = clazz;
+        this.errorDesc = "";
     }
+
+    public String getErrorDesc() {
+        return errorDesc;
+    }
+
+    public ClassBuildable(Class<?> clazz, String desc) {
+        this.clazz = clazz;
+        this.errorDesc = "//" + desc + "\n";
+    }
+
 
     @Override
     public ClassBuildable clone() {
@@ -33,7 +45,7 @@ public class ClassBuildable implements Flattenable {
 
     @Override
     public String stringify(String name) {
-        return clazz.getSimpleName() + " " + name + ";\n";
+        return (errorDesc.isEmpty() ? "" : errorDesc) + clazz.getSimpleName() + " " + name + ";\n";
     }
 
     @Override
@@ -59,5 +71,10 @@ public class ClassBuildable implements Flattenable {
     public int hashCode() {
         // Use the hashCode of the clazz field
         return Objects.hash(clazz);
+    }
+
+    @Override
+    public String[] getSerializers() {
+        return new String[]{clazz == null ? "null" : clazz.getSimpleName() + "::" + "readFrom"};
     }
 }

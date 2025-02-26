@@ -10,8 +10,10 @@ import java.util.*;
 public class JsonToBuildable {
 
     private final Map<String, Flattenable[]> knownBuildables;
-    public JsonToBuildable(Map<String, Flattenable[]> map){
+    private final List<String> unkownBehaviourals;
+    public JsonToBuildable(Map<String, Flattenable[]> map, List<String> unkownBehaviourals) {
         this.knownBuildables = map;
+        this.unkownBehaviourals = unkownBehaviourals;
     }
     public Flattenable[] createBuildable(Object type){
         switch (type) {
@@ -69,7 +71,7 @@ public class JsonToBuildable {
                     default:
                         final String RESET = "\u001B[0m";
                         final String RED = "\u001B[34m";
-                        return new ClassBuildable(ComplexType.class).flatten();
+                        return new ClassBuildable(ComplexType.class, "Unknown behavioural: " + complexName).flatten();
                 }
             }
             case String s: {
@@ -138,7 +140,8 @@ public class JsonToBuildable {
                     default:
                         final String RESET = "\u001B[0m";
                         final String RED = "\u001B[34m";
-                        return new ClassBuildable(ComplexType.class).flatten();
+                        unkownBehaviourals.add(complexName);
+                        return new ClassBuildable(ComplexType.class, "Unknown behavioural: " + complexName).flatten();
                 }
             }
             case String s: {
@@ -199,11 +202,12 @@ public class JsonToBuildable {
     private Flattenable[] searchOrCreateField(String s) {
         Flattenable[] b = searchOrDefaultField(s);
         if(b == null) {
-            Flattenable[] fieldFlattenable = new Flattenable[]{new ClassBuildable(Objects.class)};
+            Flattenable[] fieldFlattenable = new Flattenable[]{new ClassBuildable(Objects.class, "Error unknown (or unbuildable) class: " + s)};
             return fieldFlattenable;
         }
         return b.clone();
     }
+    //returns mapped class or knownBuildable which can be null
     private Flattenable[] searchOrDefaultField(String s) {
         try {
             return new Flattenable[]{new ClassBuildable(jsonDataNameToClassMapper.getClassOrException(s))};

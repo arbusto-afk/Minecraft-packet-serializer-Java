@@ -9,7 +9,7 @@ public enum jsonDataNameToClassMapper {
     optvarint(VarInt.class),
     //pstring,
     //buffer,
-    bool(mcBool.class),
+    bool(McBool.class),
     u8(u8.class),
     u16(u16.class),
     u32(u32.class),
@@ -22,12 +22,15 @@ public enum jsonDataNameToClassMapper {
     f64(f32.class),
     UUID(Serializables.Types.UUID.class),
    // option(Option.class),
-    pstring(mcString.class),
+    pstring(McString.class),
     anonymousNbt(Nbt.class),
     anonOptionalNbt(Nbt.class),
     optionalNbt(Nbt.class),
     //topBitSetTerminatedArray(TopBitSetTerminatedArray.class),
+    //should be used only for arrays
+    bit(McBitSet.class),
     nbt(Nbt.class);
+
 //    bit(Bit.class);
 
     Class<? extends ProtocolType> serClass;
@@ -46,6 +49,9 @@ public enum jsonDataNameToClassMapper {
 //            return clazz;
         }
         return clazz;
+    }
+    public Class<? extends ProtocolType> getClazz(){
+        return serClass;
     }
 
     public static jsonDataNameToClassMapper serialize(Class<?> c){

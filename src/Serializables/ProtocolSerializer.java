@@ -21,6 +21,7 @@ public class ProtocolSerializer {
 
         prot.generatePacketIdEnums(version);
         System.out.println(JsonMapper.unbuildableTypes);
+        System.out.println(JsonMapper.unbuildableBehaviourals);
     }
 
     private PacketV2[] getPacket(String packetName){

@@ -2,6 +2,9 @@ package Serializables.Refactor;
 
 import Serializables.Types.Pair;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ContainerField implements Flattenable {
     protected final Flattenable flattenable;
     protected final String name;
@@ -62,29 +65,6 @@ public class ContainerField implements Flattenable {
             return cf.stringify((stackName ? name + "_" + this.name: this.name));
         }
         return flattenable.stringify( name + "_" + this.name);
-        /*switch (this.flattenable) {
-            case ClassBuildable cb: {
-                return new String[]{cb.getBuildableClass().getSimpleName() + " " + this.name + ";\n"};
-            }
-            case MapperBuildable mb: {
-                String[] arr = mb.stringfy();
-                arr[1] += " " + this.name + ";\n";
-                return  arr;
-            }
-            case SwitchBuildable sb:{
-                return resolvedSwitchStr(sb);
-            }
-            case RestBufferBuildable rbb: {
-                return new String[]{rbb.stringfy()[0] + " " + this.name + ";\n"};
-            }
-            case PrefArrayBuildable pb: {
-                return new String[]{pb.stringfy()[0] + " " + name + ";\n"};
-            }
-            default: {
-                return flattenable.stringfy();
-            }
-        }
-        */
     }
 
     @Override
@@ -92,8 +72,11 @@ public class ContainerField implements Flattenable {
         return flattenable.fsArr(name);
     }
 
-
-/*
+    @Override
+    public String[] getSerializers() {
+        return flattenable.getSerializers();
+    }
+    /*
     @Override
     public String[] flattenAsString() {
         if(flattenable.length == 1) {

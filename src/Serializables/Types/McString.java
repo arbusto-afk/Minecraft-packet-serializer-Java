@@ -5,10 +5,10 @@ import Serializables.ProtocolType;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
-public class mcString implements ProtocolType {
+public class McString implements ProtocolType {
     private final String value;
 
-    public mcString(String value) {
+    public McString(String value) {
         this.value = value;
     }
 
@@ -43,7 +43,7 @@ public class mcString implements ProtocolType {
         buffer.put(value.getBytes(StandardCharsets.UTF_8));
     }
 
-    public static mcString readFromBuffer(ByteBuffer buffer) {
+    public static McString readFromBuffer(ByteBuffer buffer) {
         // Read the length prefix as a VarInt
         VarInt length = VarInt.readFrom(buffer);
 
@@ -53,6 +53,6 @@ public class mcString implements ProtocolType {
 
         // Convert the bytes to a string
         String value = new String(stringBytes, StandardCharsets.UTF_8);
-        return new mcString(value);
+        return new McString(value);
     }
 }

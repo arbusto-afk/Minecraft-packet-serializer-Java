@@ -4,10 +4,10 @@ import Serializables.ProtocolType;
 
 import java.nio.ByteBuffer;
 
-public class mcBool implements ProtocolType {
+public class McBool implements ProtocolType {
     private final boolean value;
 
-    public mcBool(boolean value) {
+    public McBool(boolean value) {
         this.value = value;
     }
 
@@ -25,7 +25,7 @@ public class mcBool implements ProtocolType {
         buffer.put((byte) (value ? 0x01 : 0x00));
     }
 
-    public static mcBool readFrom(ByteBuffer buffer) {
-        return new mcBool(buffer.get() != 0);
+    public static McBool readFrom(ByteBuffer buffer) {
+        return new McBool(buffer.get() != 0);
     }
 }

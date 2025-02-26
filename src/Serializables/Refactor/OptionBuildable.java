@@ -29,11 +29,12 @@ public class OptionBuildable implements Flattenable {
         List<Pair<String, String>> arr = new ArrayList<Pair<String, String>>();
         for(Flattenable f : flattenable){
             arr.addAll(Arrays.stream(f.fsArr(name)).map(
-                    p -> new Pair<>("optional " + p.getLeft(), p.getRight())).toList()
+                    p -> new Pair<>("optional " + p.getRight() + " " + p.getLeft(), p.getRight())).toList()
             );
         }
         return arr.toArray(new Pair[arr.size()]);
     }
+
 
     @Override
     public String stringify(String name) {

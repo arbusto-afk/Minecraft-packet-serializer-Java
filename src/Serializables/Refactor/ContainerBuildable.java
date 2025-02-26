@@ -59,4 +59,11 @@ public class ContainerBuildable implements Flattenable {
         }
         return p.toArray(new Pair[0]);
     }
+    public String[] getSerializers() {
+        List<String> p = new ArrayList<>();
+        for(Flattenable f : buildables){
+            p.addAll(Arrays.asList(f.getSerializers()));
+        }
+        return p.toArray(new String[0]);
+    }
 }

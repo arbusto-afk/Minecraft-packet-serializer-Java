@@ -2,8 +2,10 @@ package Serializables.Refactor;
 
 import Serializables.Types.Pair;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public interface Flattenable {
 
@@ -49,5 +51,33 @@ public interface Flattenable {
             }
         }
         return String.join(", ", fields);
+    }
+    default String classesAsCommaSeparatedString(String name) {
+        String s;
+        if(this instanceof ContainerBuildable cb){
+            s = cb.stringify();
+        } else if(this instanceof ContainerField cf){
+            s = cf.stringify();
+        } else {
+            s = this.stringify(name);
+        }
+        List<String> fields = new ArrayList<>();
+        for(String subs : s.split("\n")){
+            if(!subs.startsWith("//") && !subs.startsWith("\t//") && !subs.startsWith("\t\t//")) {
+                String[] words = subs.split(" ");
+                if (words[words.length - 1].length() == 0) {
+                    System.out.println();
+                } else {
+                    fields.add(words[0]);
+                }
+            }
+        }
+        return String.join(", ", fields);
+    }
+
+
+
+    default String[] getSerializers(){
+        throw new RuntimeException("Not implemented yet");
     }
 }
