@@ -50,10 +50,10 @@ public class ProtocolSerializer {
             throw new RuntimeException(packetName + "not found at " + toClientOrToServer + " in " + state);
         }
         PacketV2 packet = prot.getPackets().get(state).get(toClientOrToServer).get(packetName);
-        Flattenable[] flattenable = packet.getFields();
+        Flattenable flattenable = packet.getFields();
 
         int argsIndex = 0;
-        for(Flattenable field : flattenable) {
+       /* for(Flattenable field : flattenable) {
             System.out.println(argsIndex);
             switch (field){
                 case ContainerField cf :
@@ -73,6 +73,8 @@ public class ProtocolSerializer {
             }
             argsIndex++;
         }
+
+        */
         return null;
     }
 
@@ -81,9 +83,7 @@ public class ProtocolSerializer {
         String firstLine = "public class " + packetName + " {\n";
         String lastLine = "}\n";
         StringBuilder constructor = new StringBuilder();
-        for(Flattenable cf : packet.getFields()){
 
-        }
         return null;
     }
 }

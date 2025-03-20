@@ -1,12 +1,9 @@
 package Serializables;
 
-import Serializables.Types.Tuples.Tuples;
-import Serializables.Types.Void;
+import Serializables.Types.FlattenableBuilder;
 import Serializables.Refactor.*;
-import Serializables.Types.McString;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import Serializables.Types.jsonDataNameToClassMapper;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,79 +15,70 @@ import com.google.common.collect.Multimap;
 
 public class JsonMapper {
 
-    private static final Map<String, Flattenable[]> newTypes = new LinkedHashMap<>();
+    private static final Map<String, Flattenable> newTypes = new LinkedHashMap<>();
     private static final Map<String, Map<String, Map<String, PacketV2>>> packets = new LinkedHashMap<>();
     private static final Multimap<String, PacketV2> totalPackets = ArrayListMultimap.create();
 
     public final static Set<String> unbuildableTypes = new LinkedHashSet<>();
     public final static List<String> unbuildableBehaviourals = new ArrayList<>();
 
-    private static final JsonToBuildable builder = new JsonToBuildable(newTypes, unbuildableBehaviourals);
-    private static String version = "";
     private static String vString = "";
     private static Path outputPath = Paths.get("output.java");
     final static String enumClassName = "PacketIDs";
+    //<packetName, hexa string>
+    final static Map<String, String> packetIdMap = new LinkedHashMap<>();
+    static {
+        FlattenableBuilder.setKnownTypes(newTypes);
+    }
+
     public static void setVersion(String version) {
-        JsonMapper.version = version;
         JsonMapper.vString = version.replace(".", "_");
         outputPath = Paths.get("Protocol_" + vString + ".java");
+        outputBuilder = new StringBuilder(
+                "import java.math.BigInteger;\n" +
+                        "import java.nio.ByteBuffer;\n" +
+                        "import java.util.BitSet;\n" +
+                        "import java.util.Map;\n" +
+                        "import java.nio.ByteBuffer;\nimport Serializables.*;\nimport Serializables.Types.*;\n" +
+                "import static Serializables.Types.Tuples.Tuples.*;\n" + "public class Protocol_"+vString + " {\n");
     }
 
 
     @JsonProperty("types")
     public void setTypes(Map<String, Object> types) {
-        newTypes.put("void", new Flattenable[]{new ClassBuildable(Void.class)});
-        newTypes.put("string", new Flattenable[]{new ClassBuildable(McString.class)});
-        newTypes.put("restBuffer", new Flattenable[]{new RestBufferBuildable()});
-        //load types defined in primitiveMapper
-        for(jsonDataNameToClassMapper p : jsonDataNameToClassMapper.values()){
-            newTypes.put(p.name(), new Flattenable[]{new ClassBuildable(jsonDataNameToClassMapper.getClassOrException(p.name()))});
-        }
-        String[] exclusion = {"TopBitSetTerminatedArray","array", "buffer", "option", "bitfield", "container", "switch", "bitflags"};
 
+       // newTypes.put("restBuffer", new RestBufferBuildable());
+        //load types defined in primitiveMapper
+        for(NativeTypesEnum p : NativeTypesEnum.values()) {
+            newTypes.put(p.getName(), p.getClassBuildable());
+        }
         //for each type
         for(Map.Entry<String, Object> entry : types.entrySet()) {
-            if(!newTypes.containsKey(entry.getKey()) && !Arrays.stream(exclusion).anyMatch(ex -> ex.equals(entry.getKey()))) {
-                Flattenable[] type = builder.createTypeBuildable(entry.getValue());
-                boolean buildable = true;
-                for(Flattenable f : type){
-                    if(f.stringify("").contains("Object")){
-                        buildable = false;
-                        break;
+            if(!entry.getKey().matches("pstring|string")) {
+                try {
+                    //if its a valid flattenable
+                    FlattenableBuilder.valueOf(entry.getKey().toUpperCase());
+                    //do nothing
+                } catch (IllegalArgumentException e) {
+                    try {
+                        Flattenable f;
+                        if (entry.getValue() instanceof String s && s.equals("native")) {
+                            f = FlattenableBuilder.createFlattenable(entry.getKey(), false);
+                        } else {
+                            f = FlattenableBuilder.createFlattenable(entry.getValue(), false);
+                        }
+                        newTypes.put(entry.getKey(), f);
+                    } catch (Exception ex) {
+                        unbuildableTypes.add(entry.getKey());
                     }
                 }
-                if(!buildable){
-//                    System.out.println("unbuildable " + entry.getKey());
-                    unbuildableTypes.add(entry.getKey());
-                } else {
-                    newTypes.put(entry.getKey(), type);
-                }
-            }
-            //segunda pasada, eventualmente hay que hacerlo que haga N pasadas hasta que resuleva todos los que puede
-            //y cuando detecte que no puede mas corta
-            for(String s : unbuildableTypes){
-           //     Object o = types.get(s);
-                Flattenable[] type = builder.createTypeBuildable(s);
-                boolean buildable = true;
-                for(Flattenable f : type){
-                    if(f.stringify("").contains("Object")){
-                        buildable = false;
-                        break;
-                    }
-                }
-                if(!buildable){
-//                    System.out.println("unbuildable " + entry.getKey());
-                  //  unbuildableTypes.add(entry.getKey());
-                    newTypes.put(s, type);
-                } else {
-                    unbuildableTypes.remove(s);
-                    newTypes.put(s, type);
-                }
+            } else {
+                newTypes.put("string", NativeTypesEnum.STRING.getClassBuildable());
             }
         }
     }
 
-    public Map<String, Flattenable[]> getTypes() {
+    public Map<String, Flattenable> getTypes() {
         return newTypes;
     }
     public Map<String, Map<String, Map<String, PacketV2>>> getPackets() {
@@ -99,16 +87,15 @@ public class JsonMapper {
     public Multimap<String, PacketV2> getTotalPackets() { return totalPackets; }
 
 
-    private boolean test = true;
-    private static String lastState = "";
-    private static String lastTarget = "";
-    private static boolean first = true;
-    private static boolean aux = true;
-
-    private final static StringBuilder outputBuilder = new StringBuilder();
+    private final static Map<PacketV2, String> packetNameToClassString = new LinkedHashMap<>();
+    private static StringBuilder outputBuilder = new StringBuilder(
+            "\nimport java.nio.ByteBuffer;\nimport Serializables.*;\nimport Serializables.Types.*;\n" +
+            "import static Serializables.Types.Tuples.Tuples.*;\n" + "public class Protocol_"+vString + " {\n");
     private void forEachPacket(String name, Object contents, String state, String target) {
 
-        Flattenable[] packetTypeContent = builder.createBuildable(contents);
+
+        boolean stackName = name.startsWith("packet");
+        Flattenable packetTypeContent = FlattenableBuilder.createFlattenable(contents, stackName);
         PacketV2 p = new PacketV2(name, packetTypeContent);
         packets.get(state).get(target).put(name, p);
         newTypes.put(name, packetTypeContent);
@@ -116,137 +103,42 @@ public class JsonMapper {
    //     System.out.println("Loaded packet: " + name + " -> <" + Arrays.toString(p.getFields()) + ">");
         if(name.startsWith("packet")) {
             final String enumidName = state + "_" + target + "_" + name;
-            final StringBuilder s = new StringBuilder();
-            aux = true;
-            if(!lastState.equals(state)){
-                aux = false;
-                lastState = state;
-                if(first) {
-                 first = false;
-                    s.append("class Protocol { \n");
-                } else {
-                    s.append("}\n}\n");
-                }
-                s.append("\tstatic class " + state + " {\n");
+
+            List<PacketField> fields = p.getFields().asPacketFields();
+            StringBuilder fileContent = new StringBuilder("static class ").append(name).append(" extends PacketBase{\n");
+            StringBuilder constructor = new StringBuilder("public " + name + "(\n");
+            StringBuilder constructorAssignments = new StringBuilder();
+
+            StringBuilder deserializerMethod = new StringBuilder("public static "+ name + " readFrom(ByteBuffer " + Consts.BUFNAME + "){\n");
+            StringBuilder deserializerMethodPacketCreation = new StringBuilder("return new " + name + "(\n");
+            for(PacketField field : fields){
+                fileContent.append((field.getDesc().isEmpty() ? "" : "//" + field.getDesc() + "\n") + field.getSsrb().getCompleteRef() + " " + field.getName() + ";\n");
+                constructor.append(field.getSsrb().getCompleteRef() + " " + field.getName() + ",\n");
+                constructorAssignments.append("this." + field.getName() + " = " + field.getName() + ";\n");
+                deserializerMethod.append(field.getSsrb().getCompleteRef() + " " + field.getName() + " = " +
+                        field.getDeserializerMethod()
+                        + ";\n");
+                deserializerMethodPacketCreation.append(field.getName() + ",\n");
             }
-            if(!lastTarget.equals(target) && !first){
-                lastTarget = target;
-                if(aux) {
-                    s.append("}\n");
-                }
-                s.append("\tstatic class " + target + " {\n");
-            }
-            s.append("static class ").append(name).append(" extends PacketBase{\n");
-
-            /*
-            s.append("static {\n" +
-                    "register(" + enumClassName + "." + enumidName +".getId()," + name + "::readFrom());" +
-                    "}\n");*/
-
-            final String arrStr = "\t\tsuper(" + enumClassName + "." + enumidName +".getId()" + (p.fieldNames().isEmpty() ? "" : ", ") + p.fieldNames() + ");\n";
-            if(p.getFields().length != 0) {
-                //create class variables
-                for (String packetS : p.flattenAsString()) {
-                    s.append("\t").append(packetS);
-                }
-
-                //append constructor
-                s.append("\n\tpublic ").append(name).append("(");
-                //insert constructor fields
-                StringBuilder temp = new StringBuilder("\n\t\t");
-                for (String packetS : p.flattenAsString()) {
-                    temp.append(packetS.replace(";", ",").replace("\n", "\n\t\t"));
-                }
-                if (temp.lastIndexOf(",\n") != -1) {
-                    int lastComma = temp.lastIndexOf(",\n");
-                    if (lastComma != -1) {
-                        temp.deleteCharAt(lastComma);
-                    }
-                }
-                if ( false && (p.fieldNames().split(",").length == 1 || p.fieldNames().split(",").length == 2) && !(p.fieldNames().contains("//"))) {
-                    s.append(temp.toString().replace("\n", "").replace("\t", ""));
-                } else {
-                    s.append(temp.toString());
-                }
-
-
-
-                //close constructor args
-                s.deleteCharAt(s.length() - 1);
-                s.append("){\n");
-                s.append(arrStr);
-
-
-                //assign args to fields
-                for (String subString : p.fieldNames().split(",")) {
-                    if(!subString.isEmpty()) {
-                        if (subString.startsWith(" ")) {
-                            s.append("\t\tthis." + subString.substring(1) + " = " + subString + ";\n");
-                        } else {
-                            s.append("\t\tthis." + subString + " = " + subString + ";\n");
-                        }
-                    }
-                }
-                //close constructor
-                s.append("\t}\n");
+            if(!fields.isEmpty()) {
+                constructor.replace(constructor.length() - 2, constructor.length(), "").append("\n){\n");
+                deserializerMethodPacketCreation.replace(deserializerMethodPacketCreation.length() - 2, deserializerMethodPacketCreation.length(), "").append("\n);\n");
             }
             else {
-                s.append("\n\tpublic ").append(name).append("(){\n").append(arrStr).append("\n\t}\n");
+                constructor.append("){\n");
+                deserializerMethodPacketCreation.append("\n);\n");
             }
 
-            //generate byte buffer constructor
-            if(p.getFields().length != 0) {
+            final String arrStr = "\t\tsuper(" + enumClassName + "." + enumidName +".getId());\n";
+            //p.getFields().length != 0
 
-                //append constructor
-                s.append("\n\tpublic ").append(name).append("(ByteBuffer buf){\n");
-                s.append("super(buf);\n");
 
-                //assign args to fields
-                String[] fieldNames = p.fieldNames().split(",");
-                String[] classNames = p.classNames().split(",");
-                for(int i = 0; i < p.fieldNames().split(",").length; i++) {
-                    s.append("this." + fieldNames[i] + " = " + classNames[i] + ".readFrom(buf);\n");
-                }
-                //close constructor
-                s.append("\t}\n");
-            }
-            else {
-                s.append("\n\tpublic ").append(name).append("(ByteBuffer buf){\n").append("super(buf)\nsuper.setFields(new Object[0])").append("\n\t}\n");
-            }
 
-//            String s2 = "" +
-//            "\t\tByteBuffer bf = ByteBuffer.allocate(1024);\n"
-//         +  " \t\tfor(Object o : packetFields){\n"
-//             +  " \t\t\tif(o instanceof ProtocolType pt){\n"
-//            +       "\t\t\t\tpt.serializeInto(bf);\n"
-//           +   "  \t\t\t} else {\n"
-//            +      "\t\t\t\tthrow new RuntimeException(\"Attempting to serialize non PT field\" + o);\n"
-//            +    "\t\t\t}\n"
-//           + "\t\t}\n"
-//           + "\t\treturn bf.array();\n}\n";
-            String deserializeMethod = "public static " + name + " readFrom(ByteBuffer buf){\n" +
-                    "for(Object o : packetFields){\n"
-             +  " if(o instanceof ProtocolType pt){\n"
-            +       "pt.readFrom(bf);\n"
-           +   "  } else {\n"
-            +      "/throw new RuntimeException(\"Attempting to serialize non PT field\" + o);\n"
-            +    "" +
-                    "}";
+
+            //One for closing constructor other for closing packet class
             String classEnd = "}\n";
-
-            try {
-               // Path path = Paths.get(outputPath);
-                if (test) {
-                    outputBuilder.append("import Serializables.*;\nimport Serializables.Types.*;\n" +
-                            "import static Serializables.Types.Tuples.Tuples.*;\n");
-             //       Files.write(outputPath, "import Serializables.*;\nimport Serializables.Types.*;\n".getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-                    test = false;
-                }
-                outputBuilder.append(s).append(classEnd);
-              //  Files.write(outputPath, (indentString(s + classEnd)).getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            String packetClass = fileContent.toString() + constructor +  arrStr + constructorAssignments + classEnd + deserializerMethod + deserializerMethodPacketCreation + classEnd + classEnd;
+            packetNameToClassString.put(p, packetClass);
         }
     }
     public static String indentString(String input) {
@@ -258,7 +150,7 @@ public class JsonMapper {
             String trimmedLine = line.stripLeading();
 
             // Adjust indentation before appending
-            if (trimmedLine.startsWith("}") || trimmedLine.startsWith("){")) {
+            if (trimmedLine.startsWith("}") || trimmedLine.startsWith("){")|| trimmedLine.startsWith(");")) {
                 indentLevel = Math.max(0, indentLevel - 1);
             }
 
@@ -276,17 +168,33 @@ public class JsonMapper {
 
         return result.toString();
     }
-    static Map<String, String> finalMap = new LinkedHashMap<>();
+
+    public static String sufixAux(String input) {
+        StringBuilder result = new StringBuilder();
+        int count = 1;
+        int index = 0;
+
+        while ((index = input.indexOf("aux", index)) != -1) {
+            result.append(input, 0, index).append("aux").append(count++);
+            input = input.substring(index + 3);
+            index = 0;
+        }
+
+        return result.append(input).toString();
+    }
+
     public void generatePacketIdEnums(String version){
 
         final String start = "enum "+ enumClassName+" {\n";
         final String end = "\n}\n";
         StringBuilder sb = new StringBuilder();
-        for(Map.Entry<String, String> entry : finalMap.entrySet()) {
+        for(Map.Entry<String, String> entry : packetIdMap.entrySet()) {
             sb.append("\t").append(entry.getKey()).append("(").append(entry.getValue()).append("),\n");
         }
         int aux = sb.lastIndexOf(",");
-        sb.setCharAt(aux, ';');
+        if(aux != -1) {
+            sb.setCharAt(aux, ';');
+        }
         final String customLogic = "\n\tprivate final int id;\n\t" + enumClassName + "(int id){" +
                 "\n\t\tthis.id = id;" +
                 "\n\t}" +
@@ -294,9 +202,26 @@ public class JsonMapper {
                 "\n\t\treturn this.id;" +
                 //+1 } for protocol whole class end
                 "\n\t}\n}";
-        outputBuilder.append(end + end + start).append(sb).append(customLogic).append(end);
+
+        for(String state : packets.keySet()){
+            Map<String, Map<String, PacketV2>> directions = packets.get(state);
+            outputBuilder.append("public static class " + state + "{\n");
+            for(String dir : directions.keySet()) {
+                Collection<PacketV2> packets = directions.get(dir).values();
+                if (!packets.isEmpty()) {
+                    outputBuilder.append("public static class " + dir + "{\n");
+                    for (PacketV2 packet : packets) {
+                        outputBuilder.append(packetNameToClassString.get(packet));
+                    }
+                    outputBuilder.append("}\n");
+                }
+            }
+            outputBuilder.append("}\n");
+        }
+
+        outputBuilder.append(start).append(sb).append(customLogic).append(end);
         try {
-            Files.write(outputPath, indentString(outputBuilder.toString()).getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+            Files.write(outputPath, sufixAux(indentString(outputBuilder.toString())).getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -328,9 +253,9 @@ public class JsonMapper {
                 // PacketV2 p = new PacketV2(packetName, createComplexTypeFromJsonObject(packetType));
                 //todo improve this
                 if (packetName.equals("packet")) {
-                    Flattenable[] packetTypeContent = builder.createBuildable(contents);
+              /*      Flattenable packetTypeContent = builder.newCreateBuildable(contents, newTypes);
                     PacketV2 p = new PacketV2(packetName, packetTypeContent);
-                    Map<String, String> mapper = ((MapperBuildable)p.getFields()[0].flatten()[0]).getPossibleValues();
+                    Map<String, String> mapper =((MapperBuildable)(((ContainerField)(p.getFields().flatten()[0])).flatten()[0])).getPossibleValues();
                 //    SwitchBuildable aux = ((SwitchBuildable)p.getFields()[1])
                     Map<String, Object> aux = (Map<String, Object>)((Map<String, Object>)((ArrayList)((Map<String, Object>)((ArrayList)((ArrayList)contents).get(1)).get(1)).get("type")).get(1)).get("fields");
 
@@ -338,6 +263,16 @@ public class JsonMapper {
                         String subPacketName = (String)(aux.get(entry.getValue()));
                         String subPacketId = entry.getKey();
                         finalMap.put(key + "_" + (String)subMap.getKey() + "_" + subPacketName, subPacketId);
+                    }*/
+                    Map<String, Object> nameMap = (Map<String, Object>)((Map)((List)((Map)((List)((List)contents).getLast()).getLast()).get("type")).getLast()).get("fields");
+                    Map<String, Object> idMap = (Map<String, Object>) ((Map)((List)((Map)(((List)((List)contents).getLast()).getFirst())).get("type")).getLast()).get("mappings");
+         //           int statePackets = 0;
+
+                    Map<String, Integer> nameToIdMap = new LinkedHashMap<>();
+                    for(Map.Entry<String, Object> entry : idMap.entrySet()) {
+                       // int id = Integer.parseInt(entry.getKey().substring(2), 16);
+                        String pName = key + "_" + (String)subMap.getKey() + "_" + (String)nameMap.get(((String)entry.getValue()));
+                        packetIdMap.put(pName, entry.getKey());
                     }
                 } else {
 

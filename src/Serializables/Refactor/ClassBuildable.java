@@ -1,56 +1,42 @@
 package Serializables.Refactor;
 
-import Serializables.Types.Pair;
+import Serializables.Consts;
+import Serializables.NativeTypesEnum;
+import Serializables.Refactor.RefBuilder.ArgRef;
+import Serializables.Refactor.RefBuilder.FuncRef;
+import Serializables.Refactor.RefBuilder.RefBuilder;
+import Serializables.Types.*;
 
+import java.lang.Void;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 public class ClassBuildable implements Flattenable {
     private final Class<?> clazz;
     private final String errorDesc;
+    private final RefBuilder deserializerMethod;
+    private final RefBuilder serializerMethod;
 
-    public ClassBuildable(Class<?> clazz) {
+    public ClassBuildable(Class<?> clazz, RefBuilder deserializerMethod, RefBuilder serializerMethod) {
+        this(clazz, "", deserializerMethod, serializerMethod);
+    }
+    public ClassBuildable(Class<?> clazz, String desc, RefBuilder deserializerMethod, RefBuilder serializerMethod) {
         this.clazz = clazz;
-        this.errorDesc = "";
+        errorDesc = desc;
+        this.deserializerMethod = deserializerMethod;
+        this.serializerMethod = serializerMethod;
     }
-
-    public String getErrorDesc() {
-        return errorDesc;
-    }
-
-    public ClassBuildable(Class<?> clazz, String desc) {
-        this.clazz = clazz;
-        this.errorDesc = "//" + desc + "\n";
-    }
-
 
     @Override
     public ClassBuildable clone() {
-        return new ClassBuildable(clazz);
+        return new ClassBuildable(clazz, errorDesc, deserializerMethod, serializerMethod);
     }
 
     @Override
     public String toString() {
         if(clazz == null) return "null";
         return extractLast(clazz.getSimpleName());
-    }
-
-  //  @Override
-  //  public Object flatten() {
-  //      return clazz;
-   // }
-
-    public Class<?> getBuildableClass() {
-        return clazz;
-    }
-
-    @Override
-    public String stringify(String name) {
-        return (errorDesc.isEmpty() ? "" : errorDesc) + clazz.getSimpleName() + " " + name + ";\n";
-    }
-
-    @Override
-    public Pair<String, String>[] fsArr(String name) {
-        return new Pair[]{new Pair<>(name, clazz.getSimpleName())};
     }
 
     @Override
@@ -76,5 +62,13 @@ public class ClassBuildable implements Flattenable {
     @Override
     public String[] getSerializers() {
         return new String[]{clazz == null ? "null" : clazz.getSimpleName() + "::" + "readFrom"};
+    }
+
+    @Override
+    public List<PacketField> asPacketFields() {
+        if(clazz == Void.class)
+            return Collections.emptyList();
+
+        return List.of(new PacketField("", errorDesc,clazz, deserializerMethod, serializerMethod));
     }
 }

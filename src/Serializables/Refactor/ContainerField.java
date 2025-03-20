@@ -4,6 +4,8 @@ import Serializables.Types.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class ContainerField implements Flattenable {
     protected final Flattenable flattenable;
@@ -26,8 +28,6 @@ public class ContainerField implements Flattenable {
         }
     }
     public ContainerField(Flattenable flattenable, String name, boolean stackName) {
-
-
         if (flattenable instanceof ContainerField cf && !(flattenable instanceof BitfieldField)) {
             this.flattenable = cf.flattenable;
             this.name = name + "_" + cf.getName();
@@ -45,7 +45,7 @@ public class ContainerField implements Flattenable {
         return new Flattenable[]{flattenable};
     }
     public ContainerField clone(){
-        return new ContainerField(flattenable.clone(), name);
+        return new ContainerField(flattenable.clone(), name, stackName);
     }
 
     @Override
@@ -59,18 +59,7 @@ public class ContainerField implements Flattenable {
         return flattenable.stringify(name);
     }
 
-    @Override
-    public String stringify(String name) {
-        if(flattenable instanceof ContainerField cf) {
-            return cf.stringify((stackName ? name + "_" + this.name: this.name));
-        }
-        return flattenable.stringify( name + "_" + this.name);
-    }
 
-    @Override
-    public Pair<String, String>[] fsArr(String name) {;
-        return flattenable.fsArr(name);
-    }
 
     @Override
     public String[] getSerializers() {
@@ -118,4 +107,17 @@ public class ContainerField implements Flattenable {
       //  return Flattenable.super.flattenAsString();
     }
     */
+
+    @Override
+    public List<PacketField> asPacketFields() {
+
+        var aux = flattenable.asPacketFields().stream().map(p -> p.prefixName(name)).toList();
+        return aux;
+
+    }
+
+    @Override
+    public List<PacketField> asArrayFields() {
+        return flattenable.asArrayFields();
+    }
 }

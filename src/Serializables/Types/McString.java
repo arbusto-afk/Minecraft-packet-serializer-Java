@@ -1,6 +1,4 @@
 package Serializables.Types;
-import Serializables.ProtocolType;
-import Serializables.ProtocolType;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -54,5 +52,8 @@ public class McString implements ProtocolType {
         // Convert the bytes to a string
         String value = new String(stringBytes, StandardCharsets.UTF_8);
         return new McString(value);
+    }
+    public static i64 readFrom(ByteBuffer buffer) {
+        return new i64(buffer.getLong());
     }
 }

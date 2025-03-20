@@ -1,6 +1,5 @@
 package Serializables.Types;
 import java.nio.ByteBuffer;
-import Serializables.ProtocolType;
 
 // Floating-Point Types
 public class f32 implements ProtocolType {

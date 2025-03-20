@@ -1,7 +1,16 @@
 package Serializables.Refactor;
 
+import Serializables.Consts;
+import Serializables.NativeTypesEnum;
+import Serializables.Refactor.RefBuilder.ArgRef;
+import Serializables.Refactor.RefBuilder.FuncRef;
+import Serializables.Refactor.RefBuilder.RefBuilder;
 import Serializables.Types.Pair;
 import Serializables.Types.*;
+
+import java.sql.Ref;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class BitfieldField extends ContainerField {
     int size;
@@ -53,5 +62,21 @@ public class BitfieldField extends ContainerField {
     @Override
     public String[] getSerializers() {
         return new String[]{stringify("")};
+    }
+    @Override
+    public List<PacketField> asPacketFields() {
+      //  PacketField p = NativeTypesEnum.
+        RefBuilder deserializerRef = new FuncRef("READBITFIELD", List.of(new ArgRef(Consts.BUFNAME.toString())));
+        RefBuilder serializerRef = new FuncRef("WRITEBITFIELD", List.of(new ArgRef(Consts.BUFNAME.toString())));
+        return List.of(new PacketField(name, "bitfield of size: " + size, BitfieldField.class, deserializerRef, serializerRef));
+    }
+
+    @Override
+    public List<PacketField> asArrayFields() {
+        return asPacketFields();
+    }
+
+    public int getSize() {
+        return size;
     }
 }

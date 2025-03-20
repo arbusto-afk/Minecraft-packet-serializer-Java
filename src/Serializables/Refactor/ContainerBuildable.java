@@ -3,6 +3,8 @@ package Serializables.Refactor;
 import Serializables.Types.Pair;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class ContainerBuildable implements Flattenable {
     protected final ContainerField[] buildables;
@@ -66,4 +68,20 @@ public class ContainerBuildable implements Flattenable {
         }
         return p.toArray(new String[0]);
     }
+
+    @Override
+    public List<PacketField> asPacketFields() {
+        return Arrays.stream(buildables).map(ContainerField::asPacketFields).flatMap(List::stream).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PacketField> asArrayFields() {
+        return Arrays.stream(buildables).map(ContainerField::asArrayFields).flatMap(List::stream).collect(Collectors.toList());
+
+    }
+
+    public ContainerField[] getBuildables() {
+        return buildables;
+    }
+
 }

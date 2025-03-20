@@ -1,6 +1,5 @@
 package Serializables.Types;
 
-import Serializables.ProtocolType;
 import java.nio.*;
 public
 class u8 implements ProtocolType {

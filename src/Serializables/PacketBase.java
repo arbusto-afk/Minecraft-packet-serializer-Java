@@ -21,6 +21,9 @@ public abstract class PacketBase {
         this.length = null;
         this.id = new VarInt(id);
     }
+    public PacketBase(Integer id){
+        this(id, new Object[0]);
+    }
     public PacketBase(ByteBuffer buffer){
         this.fieldsLocked = false;
         this.lengthLocked = true;

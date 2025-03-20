@@ -1,5 +1,9 @@
 package Serializables.Refactor;
 
+import Serializables.PacketBase;
+import Serializables.Refactor.RefBuilder.ArgRef;
+import Serializables.Refactor.RefBuilder.MapEntryRef;
+import Serializables.Refactor.RefBuilder.MapRef;
 import Serializables.Types.Pair;
 
 import java.util.*;
@@ -29,27 +33,22 @@ public class MapperBuildable implements Flattenable {
         return possibleValues;
     }
 
-    //    @Override
-//    public Object flatten() {
-//        return possibleValues;
-//    }
 
     @Override
-    public String stringify(String name) {
-        StringBuilder strb = new StringBuilder("//possible values: ");
+    public List<PacketField> asPacketFields() {
+        List<MapEntryRef> entries = new ArrayList<>(possibleValues.size());
         for(Map.Entry<String, String> entry : possibleValues.entrySet()) {
-            strb.append(entry.getKey()).append("=").append(entry.getValue()).append(", ");
+            entries.add(new MapEntryRef("\"" + entry.getValue() + "\"", entry.getKey()));
         }
-        strb.append("\n\t").append(type.stringify(name));
-        return strb.toString();
+        var MapSsrb = new SSRB(Map.class, List.of(new SSRB(String.class), new SSRB(Integer.class)));
+        PacketField p = new PacketField("map", "", MapSsrb, new MapRef(entries), new ArgRef("/*internal map only*/ null"));
+        List<PacketField> ret = new ArrayList<>(type.asPacketFields());
+        ret.add(p);
+        return ret;
     }
 
     @Override
-    public Pair<String, String>[] fsArr(String name) {
-        StringBuilder strb = new StringBuilder(type.fsArr("-")[0].getRight() + " mapper: ");
-        for(Map.Entry<String, String> entry : possibleValues.entrySet()) {
-            strb.append(entry.getKey()).append("=").append(entry.getValue()).append(", ");
-        }
-        return new Pair[]{new Pair<>(strb.toString(), type.fsArr("-")[0].getRight())};
+    public List<PacketField> asArrayFields() {
+        return type.asArrayFields();
     }
 }

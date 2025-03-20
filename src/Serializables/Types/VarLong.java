@@ -1,7 +1,5 @@
 package Serializables.Types;
 
-import Serializables.ProtocolType;
-
 import java.nio.ByteBuffer;
 
 // VarLong Type

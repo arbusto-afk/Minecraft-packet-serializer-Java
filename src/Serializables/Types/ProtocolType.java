@@ -1,4 +1,4 @@
-package Serializables;
+package Serializables.Types;
 import java.nio.ByteBuffer;
 
 public interface ProtocolType {

@@ -5,6 +5,7 @@ import Serializables.Types.Pair;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 public interface Flattenable {
@@ -80,4 +81,11 @@ public interface Flattenable {
     default String[] getSerializers(){
         throw new RuntimeException("Not implemented yet");
     }
+
+    List<PacketField> asPacketFields();
+
+
+    default List<PacketField> asArrayFields(){
+        return asPacketFields();
+    };
 }

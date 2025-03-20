@@ -1,5 +1,4 @@
 package Serializables.Types;
-import Serializables.ProtocolType;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;

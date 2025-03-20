@@ -1,6 +1,5 @@
 package Serializables.Types;
 
-import Serializables.ProtocolType;
 import java.nio.*;
 public class i8 implements ProtocolType {
     private final byte value;

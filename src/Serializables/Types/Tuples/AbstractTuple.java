@@ -1,11 +1,11 @@
 package Serializables.Types.Tuples;
-import Serializables.ProtocolType;
+import Serializables.Types.ProtocolType;
 import java.nio.ByteBuffer;
 import java.util.function.Function;
 
 import static Serializables.Types.Tuples.Tuples.*;
 
-abstract class AbstractTuple implements ProtocolType {
+public abstract class AbstractTuple implements ProtocolType {
     private static final int TEMP_ALLOC_SIZE = 4096;
     protected final Object[] elements;
 
@@ -68,7 +68,7 @@ abstract class AbstractTuple implements ProtocolType {
         }
     }
 
-    public static AbstractTuple readFrom(ByteBuffer buffer, Function<ByteBuffer, Object>[] deserializers) {
+    public static AbstractTuple readFrom(ByteBuffer buffer, Function<ByteBuffer, Object>... deserializers) {
         if (deserializers.length <= 1) {
             throw new IllegalArgumentException("Cannot read a tuple with one or zero elements");
         }
@@ -101,6 +101,30 @@ abstract class AbstractTuple implements ProtocolType {
             case 19 -> new Tuple19<>(elements[0], elements[1], elements[2], elements[3], elements[4], elements[5], elements[6], elements[7], elements[8], elements[9], elements[10], elements[11], elements[12], elements[13], elements[14], elements[15], elements[16], elements[17], elements[18]);
             case 20 -> new Tuple20<>(elements[0], elements[1], elements[2], elements[3], elements[4], elements[5], elements[6], elements[7], elements[8], elements[9], elements[10], elements[11], elements[12], elements[13], elements[14], elements[15], elements[16], elements[17], elements[18], elements[19]);
             default -> throw new IllegalArgumentException("Unsupported tuple size: " + elements.length);
+        };
+    }
+    public static Class<? extends AbstractTuple> getTupleClassForSize(int size) {
+        return switch (size) {
+            case 2 -> Tuple2.class;
+            case 3 -> Tuple3.class;
+            case 4 -> Tuple4.class;
+            case 5 -> Tuple5.class;
+            case 6 -> Tuple6.class;
+            case 7 -> Tuple7.class;
+            case 8 -> Tuple8.class;
+            case 9 -> Tuple9.class;
+            case 10 -> Tuple10.class;
+            case 11 -> Tuple11.class;
+            case 12 -> Tuple12.class;
+            case 13 -> Tuple13.class;
+            case 14 -> Tuple14.class;
+            case 15 -> Tuple15.class;
+            case 16 -> Tuple16.class;
+            case 17 -> Tuple17.class;
+            case 18 -> Tuple18.class;
+            case 19 -> Tuple19.class;
+            case 20 -> Tuple20.class;
+            default -> throw new IllegalArgumentException("Unsupported tuple size: " + size);
         };
     }
 }

@@ -89,13 +89,13 @@ import Serializables.ProtocolSerializer;
 */
 public class Main {
     public static void main(String[] args) throws IOException {
-        String version = "1.8";
+        String version = "1.21.1";
         String pcOrBedrock = "pc";
         ProtocolSerializer mapper = new ProtocolSerializer(version, pcOrBedrock);
        // var packet = Protocol.configuration_toClient_packet_feature_flags.getId();
 
      //   PacketBase p = new Protocol.play.toClient.packet_map_chunk();
-        return;
+       return;
         //varint, 32 , 32 ,32 ,16
 
         //65 explosion | vec3, optional vec3, particle, varint, switch

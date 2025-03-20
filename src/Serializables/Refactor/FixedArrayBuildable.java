@@ -1,11 +1,17 @@
 package Serializables.Refactor;
 
+import Serializables.Consts;
+import Serializables.NativeTypesEnum;
+import Serializables.Refactor.RefBuilder.ArgRef;
+import Serializables.Refactor.RefBuilder.FuncRef;
 import Serializables.Types.VarInt;
+
+import java.util.List;
 
 public class FixedArrayBuildable extends PrefArrayBuildable {
     protected final int size;
-    public FixedArrayBuildable(int size, Flattenable[] type) {
-        super(new ClassBuildable(VarInt.class), type);
+    public FixedArrayBuildable(int size, Flattenable type) {
+        super(NativeTypesEnum.VARINT.getClassBuildable(), type);
         this.size = size;
     }
 
@@ -31,4 +37,11 @@ public class FixedArrayBuildable extends PrefArrayBuildable {
 //        }
 //        return this;
 //    }
+
+    @Override
+    public List<PacketField> asPacketFields() {
+        //pref array always return a list of 1 element
+        List<PacketField> aux = super.asPacketFields();
+          return aux;
+    }
 }
