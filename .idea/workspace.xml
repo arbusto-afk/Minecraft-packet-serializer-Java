@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="27d59811-97a0-48e0-8bdf-5d12885136fb" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/Serializables/Refactor/RefBuilder/NotSelfPrefixedFuncRef.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/guava_33_4_0_jre.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/guava_33_4_0_jre.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/jackson_annotations_2_14_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/jackson_core_2_15_2.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/jackson_databind_2_11_1_javadoc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/jackson_databind_2_11_1_javadoc1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Protocol_1_21_1.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Serializables/BadPacketFormatException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Serializables/BadPacketFormatException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Serializables/Consts.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Serializables/Consts.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Serializables/FlattenableBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Serializables/FlattenableBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Serializables/JsonMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Serializables/JsonMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Serializables/NativeTypesEnum.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Serializables/NativeTypesEnum.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Serializables/Refactor/BitfieldBuildable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Serializables/Refactor/BitfieldBuildable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Serializables/Refactor/BitfieldField.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Serializables/Refactor/BitfieldField.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Serializables/Refactor/FixedBuffer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Serializables/Refactor/FixedBuffer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Serializables/Refactor/OptionBuildable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Serializables/Refactor/OptionBuildable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Serializables/Refactor/PacketField.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Serializables/Refactor/PacketField.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Serializables/Refactor/PrefBuffer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Serializables/Refactor/PrefBuffer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Serializables/Refactor/RefBuilder/Condition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Serializables/Refactor/RefBuilder/Condition.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Serializables/Refactor/RefBuilder/FuncRef.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Serializables/Refactor/RefBuilder/FuncRef.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Serializables/Refactor/RefBuilder/RefBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Serializables/Refactor/RefBuilder/RefBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Serializables/Refactor/RefBuilder/TernaryRef.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Serializables/Refactor/RefBuilder/TernaryRef.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Serializables/Refactor/RestBufferBuildable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Serializables/Refactor/RestBufferBuildable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Serializables/Refactor/SwitchBuildable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Serializables/Refactor/SwitchBuildable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/neoutil/ArrayField.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/neoutil/OptionField.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/neoutil/Packet.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/neoutil/PacketField.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/neoutil/ProtocolMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/src/Main.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/src/Protocol_1_21_1.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/Minecraft-packet-serializer-Java.iml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 5
+}</component>
+  <component name="ProjectId" id="2udEk3qw8XPK6GDbifGky05OgMx" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Unnamed.executor": "Debug",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "master",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/nacho/Downloads/jackson-databind-2.11.1.jar",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\nacho\IdeaProjects\Minecraft-packet-serializer-Java\src" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="Unnamed" type="Application" factoryName="Application" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Main" />
+      <module name="Minecraft-packet-serializer-Java" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-fdfe4dae3a2d-intellij.indexing.shared.core-IU-243.22562.218" />
+        <option value="bundled-js-predefined-d6986cc7102b-deb605915726-JavaScript-IU-243.22562.218" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="27d59811-97a0-48e0-8bdf-5d12885136fb" name="Changes" comment="" />
+      <created>1742570193002</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1742570193002</updated>
+      <workItem from="1742570194298" duration="46000" />
+      <workItem from="1742570245735" duration="370000" />
+      <workItem from="1742571234669" duration="467000" />
+      <workItem from="1742571867749" duration="201000" />
+      <workItem from="1742572082851" duration="1453000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <condition expression="s.equals(&quot;restBuffer&quot;)" language="JAVA" />
+          <url>file://$PROJECT_DIR$/src/Serializables/FlattenableBuilder.java</url>
+          <line>164</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/Serializables/JsonMapper.java</url>
+          <line>53</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

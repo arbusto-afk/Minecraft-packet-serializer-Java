@@ -2,8 +2,13 @@
   <library name="guava-33.4.0-jre">
     <CLASSES>
       <root url="jar://$USER_HOME$/Downloads/guava-33.4.0-jre.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/jackson-annotations-2.14.0.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/jackson-core-2.15.2.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/jackson-databind-2.11.1.jar!/" />
     </CLASSES>
-    <JAVADOC />
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/Downloads/jackson-databind-2.11.1-javadoc.jar!/" />
+    </JAVADOC>
     <SOURCES />
   </library>
 </component>

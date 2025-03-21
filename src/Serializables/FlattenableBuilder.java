@@ -85,6 +85,11 @@ public enum FlattenableBuilder {
             Flattenable typeD = createFlattenable(typeJson, stackName);
             return new OptionBuildable(typeD);
         }
+        @Override
+        public Flattenable handle(String typeName, boolean stackName) {
+            Flattenable typeD = createFlattenable(typeName, stackName);
+            return new OptionBuildable(typeD);
+        }
     },
     BITFIELD("bitfield") {
         @Override
@@ -94,12 +99,6 @@ public enum FlattenableBuilder {
                 containerFields.add(new BitfieldField((Integer) field.get("size"), (Boolean) field.get("signed"), (String) field.get("name")));
             }
             return new BitfieldBuildable(containerFields.toArray(new BitfieldField[0]));
-        }
-    },
-    RESTBUFFER("restBuffer") {
-        @Override
-        public Flattenable handle(Map<String, Object> typeJson, boolean stackName) {
-            return new RestBufferBuildable();
         }
     },
     BITFLAGS("bitflags") {
@@ -129,6 +128,9 @@ public enum FlattenableBuilder {
     public Flattenable handle(Map<String,Object> typeJson, boolean stackName){
         throw new UnsupportedOperationException("Attempting to create a " + name + "with: " + typeJson);
     }
+    public Flattenable handle(String typeName, boolean stackName){
+        throw new UnsupportedOperationException("Attempting to create a " + name + "with: " + typeName);
+    }
     private Flattenable handle(Object o,  boolean stackName) {
          switch (o) {
              case Map<?, ?> m : return handle((Map<String,Object>)m, stackName);
@@ -141,7 +143,10 @@ public enum FlattenableBuilder {
                     throw new RuntimeException(e);
                 }
             }
-             default : throw new UnexpectedJsonFormatException("Unexpected json format on handler");
+             case String s: {
+                 return handle(s, stackName);
+             }
+             default : throw new UnexpectedJsonFormatException("Unexpected json format on handler, got: " + o.getClass());
         }
     }
 

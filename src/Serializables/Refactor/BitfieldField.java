@@ -73,7 +73,7 @@ public class BitfieldField extends ContainerField {
 
     @Override
     public List<PacketField> asArrayFields() {
-        return asPacketFields();
+        return this.asPacketFields();
     }
 
     public int getSize() {

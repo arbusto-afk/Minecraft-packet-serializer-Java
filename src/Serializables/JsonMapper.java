@@ -110,6 +110,9 @@ public class JsonMapper {
             StringBuilder constructorAssignments = new StringBuilder();
 
             StringBuilder deserializerMethod = new StringBuilder("public static "+ name + " readFrom(ByteBuffer " + Consts.BUFNAME + "){\n");
+            deserializerMethod.append("try {\n" +
+                    "int " + Consts.PACKETSIZENAME + " = " + Consts.VARINTDESERIALIZER + ";\n"
+                    + "int " + Consts.STARTINGPOS + " = " + Consts.VARINTDESERIALIZER + ";\n");
             StringBuilder deserializerMethodPacketCreation = new StringBuilder("return new " + name + "(\n");
             for(PacketField field : fields){
                 fileContent.append((field.getDesc().isEmpty() ? "" : "//" + field.getDesc() + "\n") + field.getSsrb().getCompleteRef() + " " + field.getName() + ";\n");
@@ -120,6 +123,7 @@ public class JsonMapper {
                         + ";\n");
                 deserializerMethodPacketCreation.append(field.getName() + ",\n");
             }
+
             if(!fields.isEmpty()) {
                 constructor.replace(constructor.length() - 2, constructor.length(), "").append("\n){\n");
                 deserializerMethodPacketCreation.replace(deserializerMethodPacketCreation.length() - 2, deserializerMethodPacketCreation.length(), "").append("\n);\n");
@@ -128,6 +132,9 @@ public class JsonMapper {
                 constructor.append("){\n");
                 deserializerMethodPacketCreation.append("\n);\n");
             }
+            deserializerMethod.append(deserializerMethodPacketCreation);
+            deserializerMethod.append("} catch(Exception ex) {\n" +
+                    "throw new BadPacketFormatException(ex);\n}\n");
 
             final String arrStr = "\t\tsuper(" + enumClassName + "." + enumidName +".getId());\n";
             //p.getFields().length != 0
@@ -137,7 +144,7 @@ public class JsonMapper {
 
             //One for closing constructor other for closing packet class
             String classEnd = "}\n";
-            String packetClass = fileContent.toString() + constructor +  arrStr + constructorAssignments + classEnd + deserializerMethod + deserializerMethodPacketCreation + classEnd + classEnd;
+            String packetClass = fileContent.toString() + constructor +  arrStr + constructorAssignments + classEnd + deserializerMethod + classEnd + classEnd;
             packetNameToClassString.put(p, packetClass);
         }
     }

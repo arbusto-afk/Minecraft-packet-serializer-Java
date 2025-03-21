@@ -41,6 +41,7 @@ public class PacketField {
     public PacketField prefixName(String name) {
         if(name.equals("anon")) {
             hasSkippedFirstField = true;
+            deserializerMethod.prefixName(name);
             return this;
         }
         this.name = this.name.isEmpty() ? name : name + "_" + this.name;

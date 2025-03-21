@@ -6,8 +6,8 @@ import java.util.List;
 
 public class FuncRef implements RefBuilder{
 
-    private String funcName;
-    private List<? extends RefBuilder> args;
+    protected String funcName;
+    protected List<? extends RefBuilder> args;
 
     public FuncRef(String funcName, List<? extends RefBuilder> args) {
         this.funcName = funcName;

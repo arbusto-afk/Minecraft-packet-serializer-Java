@@ -26,6 +26,17 @@ public class TernaryRef implements RefBuilder{
         this.join = join;
     }
 
+    public TernaryRef(List<Condition> conditions, RefBuilder left, RefBuilder right, String join, boolean hasIgnoredFirst) {
+        if(left == null || right == null) {
+            throw new IllegalArgumentException("left or right is null");
+        }
+        this.conditions = conditions;
+        this.left = left;
+        this.right = right;
+        this.join = join;
+        this.hasIgnoredFirst = hasIgnoredFirst;
+    }
+
     @Override
     public String toString(){
         String join = this.join == null ? "E-213-NOJOIN@TERNARYREF" : this.join;
@@ -41,7 +52,7 @@ public class TernaryRef implements RefBuilder{
     public RefBuilder prefixName(String prefix, boolean hasIgnoredFirst) {
 
         List<Condition> newConditions = new ArrayList<>();
-        if(hasIgnoredFirst) {
+        if(hasIgnoredFirst ) {
             for (Condition s : conditions) {
                 Condition newCond;
                 String start = "(";

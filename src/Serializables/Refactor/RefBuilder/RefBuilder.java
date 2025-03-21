@@ -17,10 +17,23 @@ public interface RefBuilder {
         }
     }
     static TernaryRef basicOrTernaryRef(String compareToName, List<String> values, RefBuilder rf){
-        return new TernaryRef(values.stream().map(s -> new Condition("(" + compareToName + ".equals(" + (rf.isInteger(s) ? "": compareToName + "_map.get(") + ((rf.isInteger(s)) ? s :"\"" + s + "\")") + "))")).toList(), rf, new ArgRef("null"), "||");
+        return new TernaryRef(values.stream().map(s -> {
+            Boolean isIntegerOrBoolean =  s.matches("([0-9]{1,99})|true|false");
+            String aux = isIntegerOrBoolean ? " == " : ".equals(";
+            return new Condition("(" + compareToName + aux + (rf.isInteger(s) ? "": compareToName + "_map.get(") + (isIntegerOrBoolean ? s :"\"" + s + "\")") + (isIntegerOrBoolean ? "" : ")") + ")");
+        }).toList(), rf, new ArgRef("null"), " || ");
     }
+
     static TernaryRef basicNandTernaryRef(String compareToName, List<String> values, RefBuilder rf){
-        return new TernaryRef(values.stream().map(s -> new Condition("(!" + compareToName + ".equals(" + s + "))")).toList(), rf, new ArgRef("null"), "&&");
+        return new TernaryRef(values.stream().map(s ->
+        {
+
+                Boolean isIntegerOrBoolean =  s.matches("([0-9]{1,99})|true|false") ;
+                String aux = isIntegerOrBoolean ? " != " : ".equals(";
+                return new Condition((isIntegerOrBoolean ? "(": "(!") + compareToName + aux + (isIntegerOrBoolean ? "": compareToName + "_map.get(") + ((rf.isInteger(s)) ? s :"\"" + s + "\")") + (isIntegerOrBoolean ? "" : ")") + ")");
+
+        //    new Condition("(!" + compareToName + ".equals(" + s + "))")
+        }).toList(), rf, new ArgRef("null"), " && ");
     }
 
     default RefBuilder prefixName(String compareToName){

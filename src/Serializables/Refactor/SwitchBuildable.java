@@ -85,16 +85,31 @@ public class SwitchBuildable implements Flattenable {
             if(!(defaultField.asPacketFields().size() == 1 && defaultField.asPacketFields().getFirst().getSsrb().getClazz().equals(Void.class))) {
                 finalFields.addAll(defaultField.asPacketFields().stream().map(
                                 p -> new PacketField(p.getName(), p.getDesc(), p.getSsrb(),RefBuilder
-                                        .basicOrTernaryRef(
+                                        .basicNandTernaryRef(
                                                 compareToFieldName,
                                                 possibleValues,
                                                 p.getDeserializerMethod()
                                         ),
-                                        new ArgRef("SERIALIZERSWITCH"))
+                                        new ArgRef("aux -> \"SERIALIZERSWITCH\""))
                                 ).toList());
             }
         }
         return finalFields;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(compareToFieldName, fields, defaultField);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        SwitchBuildable that = (SwitchBuildable) obj;
+        return Objects.equals(compareToFieldName, that.compareToFieldName) &&
+                Objects.equals(fields, that.fields) &&
+                Objects.equals(defaultField, that.defaultField);
     }
 
 }

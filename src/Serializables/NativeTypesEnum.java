@@ -1,10 +1,8 @@
 package Serializables;
 
-import Serializables.Refactor.ClassBuildable;
-import Serializables.Refactor.PacketField;
+import Serializables.Refactor.*;
 import Serializables.Refactor.RefBuilder.ArgRef;
 import Serializables.Refactor.RefBuilder.FuncRef;
-import Serializables.Refactor.SSRB;
 import Serializables.Types.*;
 import Serializables.Types.Void;
 
@@ -146,7 +144,14 @@ public enum NativeTypesEnum {
                     Void.class,
                     new FuncRef("ERROR -477", new ArgRef(Consts.BUFNAME.toString())),
                     new FuncRef(":(", new ArgRef(":(("))
-            ));
+            )),
+    RESTBUFFER("restBuffer",
+        new ClassBuildable(
+            BitSet.class,
+            Consts.RESTBUFFERDESERIALIZER.getF(),
+                new FuncRef(":(@RESTBUFFER", new ArgRef(":(("))
+        ))
+    ;
 
 
 //    bit(Bit.class);

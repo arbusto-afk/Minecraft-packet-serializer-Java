@@ -2,7 +2,6 @@ package Serializables.Refactor;
 
 import Serializables.Consts;
 import Serializables.Refactor.RefBuilder.*;
-import neoutil.Packet;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

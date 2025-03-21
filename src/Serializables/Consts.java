@@ -2,12 +2,15 @@ package Serializables;
 
 import Serializables.Refactor.RefBuilder.ArgRef;
 import Serializables.Refactor.RefBuilder.FuncRef;
+import Serializables.Refactor.RefBuilder.NotSelfPrefixedFuncRef;
 import Serializables.Refactor.RefBuilder.RefBuilder;
 import Serializables.Types.*;
 import Serializables.Types.Void;
 
 public enum Consts {
     BUFNAME("buf"),
+    PACKETSIZENAME("packetSize"),
+    STARTINGPOS("startingPos"),
     PROTOCOLDESERIALIZERS("ProtocolDeserializers"),
  //   STRINGDESERIALIZER(PROTOCOLDESERIALIZERS + ".readVarintPrefixedString"),
    // BOOLDESERIALIZER(PROTOCOLDESERIALIZERS + ".readProtocolBool"),
@@ -61,6 +64,7 @@ public enum Consts {
     OPTIONALNBTDESERIALIZER(new FuncRef(PROTOCOLDESERIALIZERS + ".optionalNbtDeserializer", new ArgRef(Consts.BUFNAME.toString()))),
     BITDESERIALIZER(new FuncRef(PROTOCOLDESERIALIZERS + ".readBit", new ArgRef(Consts.BUFNAME.toString()))),
     STRINGDESERIALIZER(new FuncRef(PROTOCOLDESERIALIZERS + ".readString", new ArgRef(Consts.BUFNAME.toString()))),
+    RESTBUFFERDESERIALIZER(new FuncRef("BitSet.valueOf", new NotSelfPrefixedFuncRef(Consts.BUFNAME.toString() + ".get", new ArgRef("new byte[" +  Consts.PACKETSIZENAME + "- (" + Consts.BUFNAME + ".position() - " + Consts.STARTINGPOS + ")" + "]")))),
 
    PEEKI8(new FuncRef(PROTOCOLDESERIALIZERS + ".peekI8", new ArgRef(Consts.BUFNAME.toString()))),
    PEEKI16(new FuncRef(PROTOCOLDESERIALIZERS + ".peekI16", new ArgRef(Consts.BUFNAME.toString()))),

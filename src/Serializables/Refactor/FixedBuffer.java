@@ -3,6 +3,7 @@ package Serializables.Refactor;
 import Serializables.Consts;
 import Serializables.Refactor.RefBuilder.ArgRef;
 import Serializables.Refactor.RefBuilder.FuncRef;
+import Serializables.Refactor.RefBuilder.NotSelfPrefixedFuncRef;
 import Serializables.Refactor.RefBuilder.RefBuilder;
 
 import java.nio.ByteBuffer;
@@ -27,7 +28,7 @@ public class FixedBuffer implements Flattenable{
     public List<PacketField> asPacketFields() {
 
         RefBuilder serRef = new ArgRef("NOSERIALIZER@FixedBuffer");
-        RefBuilder desRef = new FuncRef("Bitset.valueOf", new FuncRef(Consts.BUFNAME.toString() + ".get", new ArgRef("new byte[" + size + "]")) );
+        RefBuilder desRef = new FuncRef("Bitset.valueOf", new NotSelfPrefixedFuncRef(Consts.BUFNAME.toString() + ".get", new ArgRef("new byte[" + size + "]")) );
         return List.of(new PacketField("", "", BitSet.class,desRef , serRef));
     }
 
